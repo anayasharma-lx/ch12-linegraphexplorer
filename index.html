@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Line Graph Explorer — Ganita Prakash Grade 8</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f4f0;--surface:#ffffff;--surface2:#f0ede8;
+  --border:#d8d4cc;--border-hi:#b8b2a8;
+  --text:#1a1814;--text2:#5a5650;--text3:#9a958e;
+  --font:'DM Sans',-apple-system,sans-serif;
+  --mono:'DM Mono',ui-monospace,monospace;
+  /* Series colours — accessible, distinct */
+  --c0:#c0392b;--c1:#2c7be5;--c2:#1a7a4a;--c3:#e08020;--c4:#7c3aed;--c5:#0891b2;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;line-height:1.5}
+.page{max-width:900px;margin:0 auto;padding:32px 24px}
+.label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.title{font-size:22px;font-weight:700;margin-bottom:6px}
+.subtitle{font-size:14px;color:var(--text2);margin-bottom:24px;max-width:600px;line-height:1.55}
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px}
+
+/* Dataset selector */
+.ds-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.ds-btn{padding:7px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:12.5px;font-weight:500;color:var(--text2);background:var(--surface);cursor:pointer;font-family:var(--font);transition:all .12s}
+.ds-btn.active{color:var(--surface);border-color:transparent}
+.ds-btn[data-idx="0"].active{background:var(--c0)}
+.ds-btn[data-idx="1"].active{background:var(--c1)}
+.ds-btn[data-idx="2"].active{background:var(--c2)}
+.ds-btn[data-idx="3"].active{background:var(--c3)}
+.ds-btn[data-idx="4"].active{background:var(--c4)}
+.ds-btn[data-idx="5"].active{background:var(--c5)}
+
+/* Canvas */
+.canvas-wrap{position:relative;width:100%;overflow:hidden}
+canvas{display:block;width:100%;border-radius:8px;background:#fafaf8}
+
+/* Legend */
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text2)}
+.leg-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+
+/* Tooltip */
+#tooltip{position:fixed;background:#1a1814;color:#fff;padding:8px 12px;border-radius:8px;font-size:12.5px;pointer-events:none;display:none;z-index:100;line-height:1.5;max-width:220px}
+.tt-city{font-weight:600;margin-bottom:2px}
+.tt-val{font-family:var(--mono)}
+
+/* Step framework */
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+@media(max-width:560px){.steps{grid-template-columns:1fr}}
+.step-card{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:16px}
+.step-num{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.step-title{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:8px}
+.step-body{font-size:13px;color:var(--text2);line-height:1.6}
+.step-body ul{padding-left:16px;margin-top:4px}
+.step-body li{margin-bottom:4px}
+
+/* Peak info */
+.peaks{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.peak-item{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12.5px;min-width:120px}
+.peak-city{font-weight:600;margin-bottom:3px}
+.peak-val{font-family:var(--mono);font-size:13px}
+</style>
+</head>
+<body>
+<div id="tooltip"><div class="tt-city" id="tt-city"></div><div class="tt-val" id="tt-val"></div></div>
+<div class="page">
+  <div class="label">Chapter 5 · Tales by Dots and Lines</div>
+  <div class="title">Line Graph Explorer</div>
+  <div class="subtitle">Toggle cities to compare their monthly patterns. Hover over data points to read exact values. Follow the two-step analysis framework the textbook introduces.</div>
+
+  <div class="card">
+    <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Dataset</div>
+    <div class="ds-row" id="dsRow">
+      <button class="ds-btn" data-idx="0">Temperature (Kerala)</button>
+      <button class="ds-btn" data-idx="1">Temperature (Punjab)</button>
+    </div>
+    <div class="ds-row" id="dsRow2">
+      <button class="ds-btn" data-idx="2">Rainfall (Udupi)</button>
+      <button class="ds-btn" data-idx="3">Rainfall (Mumbai)</button>
+      <button class="ds-btn" data-idx="4">Rainfall (Chennai)</button>
+      <button class="ds-btn" data-idx="5">Rainfall (Rameswaram)</button>
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="cvs" height="320"></canvas>
+    </div>
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">Two-step analysis</div>
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-num">Step 1</div>
+        <div class="step-title">Identify what is given</div>
+        <div class="step-body" id="step1">Select one or more cities to begin.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">Step 2</div>
+        <div class="step-title">Infer and interpret</div>
+        <div class="step-body" id="step2">Observations and conclusions will appear here once you select data.</div>
+      </div>
+    </div>
+    <div class="peaks" id="peaks"></div>
+  </div>
+</div>
+
+<script>
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const COLORS=['#c0392b','#2c7be5','#1a7a4a','#e08020','#7c3aed','#0891b2'];
+const SHAPES=['circle','square','triangle','diamond','circle','square'];
+
+const DATASETS=[
+  {name:'Temperature — Kerala', unit:'°C', data:[30,31,32,33,32,29,28,28,29,30,30,29], type:'temp'},
+  {name:'Temperature — Punjab', unit:'°C', data:[19,21,25,30,35,38,36,35,35,32,27,23], type:'temp'},
+  {name:'Rainfall — Udupi', unit:'mm', data:[1,0,1,18,62,241,277,245,140,88,39,9], type:'rain'},
+  {name:'Rainfall — Mumbai', unit:'mm', data:[2,1,1,0,18,485,617,340,264,64,14,2], type:'rain'},
+  {name:'Rainfall — Chennai', unit:'mm', data:[24,11,6,14,52,53,83,98,119,306,310,188], type:'rain'},
+  {name:'Rainfall — Rameswaram', unit:'mm', data:[26,13,19,34,25,4,10,10,19,81,104,78], type:'rain'},
+];
+
+const ANALYSIS={
+  '0':{ step1:'Monthly maximum temperature in Kerala, shown in °C. Data is marked for each of the 12 months.', step2:'Kerala stays mostly flat throughout the year — the range is only about 5°C. Peak is around 33°C in April, lowest around 28°C in July–August. Kerala shows little seasonal variation in maximum temperature.'},
+  '1':{ step1:'Monthly maximum temperature in Punjab, shown in °C. Data is marked for each of the 12 months.', step2:'Punjab shows a much wider range — from about 19°C in January up to 38°C in June. It drops sharply after June. Temperature varies more than 19°C across the year, unlike Kerala.'},
+  '0,1':{ step1:'Monthly maximum temperature for both Kerala and Punjab in 2023, in °C.', step2:'Punjab varies far more — reaching colder and warmer extremes. Kerala stays in a narrow band. In summer Punjab is hotter; in winter Punjab is colder. Both dip in July (monsoon). Punjab\'s line has a clear mountain shape; Kerala\'s is nearly flat.'},
+  '2':{ step1:'Monthly average rainfall in Udupi (west coast), in mm. This is an average across multiple years.', step2:'Udupi is dominated by the south-west monsoon. Almost no rain from Jan–Apr, then an extreme surge from June to August (peak ~277mm in July). The dry season is very pronounced.'},
+  '3':{ step1:'Monthly average rainfall in Mumbai (west coast), in mm.', step2:'Mumbai shows a similar west-coast pattern to Udupi but with even more intense peaks — June to September account for almost all annual rainfall. July alone exceeds 600mm.'},
+  '4':{ step1:'Monthly average rainfall in Chennai (east coast), in mm.', step2:'Chennai\'s pattern is inverted compared to west-coast cities. Rain comes from the north-east monsoon (Oct–Dec), peaking in November. This reflects Chennai\'s east-coast position.'},
+  '5':{ step1:'Monthly average rainfall in Rameswaram (east coast, tip of India), in mm.', step2:'Rameswaram receives very little rain from January to September, then picks up in October–December via the north-east monsoon. A different rhythm from west-coast cities.'},
+};
+
+let active = new Set();
+
+function getKey(){ return [...active].sort().join(','); }
+
+function getAnalysis(){
+  const key=getKey();
+  if(ANALYSIS[key]) return ANALYSIS[key];
+  // Fallback for arbitrary combos
+  const names=([...active]).map(i=>DATASETS[i].name.split('—')[1].trim());
+  return {
+    step1:`Showing ${names.join(', ')}. Each series is plotted by month (Jan–Dec).`,
+    step2:`Compare the peaks and troughs across series. Notice which months see the highest values and how patterns differ between east coast, west coast, and inland locations.`
+  };
+}
+
+function resize(){
+  const W = document.getElementById('cvs').parentElement.clientWidth;
+  document.getElementById('cvs').style.width=W+'px';
+  drawChart();
+}
+
+function drawChart(){
+  const cvs=document.getElementById('cvs');
+  const PR=window.devicePixelRatio||1;
+  const W=cvs.parentElement.clientWidth;
+  cvs.width=W*PR; cvs.height=320*PR;
+  cvs.style.width=W+'px'; cvs.style.height='320px';
+  const ctx=cvs.getContext('2d');
+  ctx.scale(PR,PR);
+  ctx.clearRect(0,0,W,320);
+  ctx.fillStyle='#fafaf8';
+  ctx.fillRect(0,0,W,320);
+
+  if(!active.size){
+    ctx.fillStyle='#c0bab2';
+    ctx.font='14px DM Sans, sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText('Select one or more series above to plot.',W/2,160);
+    return;
+  }
+
+  const PAD={l:52,r:20,t:24,b:40};
+  const cW=W-PAD.l-PAD.r, cH=320-PAD.t-PAD.b;
+
+  // Determine global min/max
+  let allVals=[];
+  active.forEach(i=>allVals.push(...DATASETS[i].data));
+  const minV=Math.min(0,...allVals);
+  const maxV=Math.max(...allVals);
+  const range=maxV-minV||1;
+
+  function cx(m){ return PAD.l + (m/11)*cW; }
+  function cy(v){ return PAD.t + cH - ((v-minV)/range)*cH; }
+
+  // Grid lines
+  const steps=5;
+  ctx.strokeStyle='#e8e4de';
+  ctx.lineWidth=1;
+  ctx.fillStyle='#9a958e';
+  ctx.font='11px DM Sans, sans-serif';
+  ctx.textAlign='right';
+  for(let i=0;i<=steps;i++){
+    const v=minV+(range/steps)*i;
+    const y=cy(v);
+    ctx.beginPath();
+    ctx.moveTo(PAD.l,y);
+    ctx.lineTo(W-PAD.r,y);
+    ctx.stroke();
+    ctx.fillText(Math.round(v),PAD.l-8,y+4);
+  }
+
+  // Month labels
+  ctx.fillStyle='#9a958e';
+  ctx.textAlign='center';
+  ctx.font='11px DM Sans, sans-serif';
+  MONTHS.forEach((m,i)=>{
+    ctx.fillText(m,cx(i),320-PAD.b+16);
+    ctx.beginPath();
+    ctx.strokeStyle='#d8d4cc';
+    ctx.lineWidth=1;
+    ctx.moveTo(cx(i),PAD.t);
+    ctx.lineTo(cx(i),320-PAD.b);
+    ctx.stroke();
+  });
+
+  // Axes
+  ctx.beginPath();
+  ctx.strokeStyle='#b8b2a8';
+  ctx.lineWidth=1.5;
+  ctx.moveTo(PAD.l,PAD.t);
+  ctx.lineTo(PAD.l,320-PAD.b);
+  ctx.lineTo(W-PAD.r,320-PAD.b);
+  ctx.stroke();
+
+  // Unit label
+  const units=[...active].map(i=>DATASETS[i].unit);
+  const unit=[...new Set(units)][0]||'';
+  ctx.save();
+  ctx.translate(14,160);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='#9a958e';
+  ctx.font='11px DM Sans, sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText(unit,0,0);
+  ctx.restore();
+
+  // Draw series
+  [...active].forEach(idx=>{
+    const ds=DATASETS[idx];
+    const color=COLORS[idx];
+    ctx.strokeStyle=color;
+    ctx.lineWidth=2.5;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ds.data.forEach((v,m)=>{
+      if(m===0) ctx.moveTo(cx(m),cy(v));
+      else ctx.lineTo(cx(m),cy(v));
+    });
+    ctx.stroke();
+
+    // Dots
+    ds.data.forEach((v,m)=>{
+      const x=cx(m),y=cy(v);
+      ctx.beginPath();
+      ctx.fillStyle=color;
+      ctx.arc(x,y,5,0,Math.PI*2);
+      ctx.fill();
+      ctx.strokeStyle='#fff';
+      ctx.lineWidth=1.5;
+      ctx.stroke();
+    });
+  });
+}
+
+// Tooltip
+const tooltip=document.getElementById('tooltip');
+const cvs=document.getElementById('cvs');
+cvs.onmousemove=(e)=>{
+  if(!active.size){ tooltip.style.display='none'; return; }
+  const r=cvs.getBoundingClientRect();
+  const W=r.width;
+  const PAD={l:52,r:20,t:24,b:40};
+  const cW=W-PAD.l-PAD.r;
+  const x=e.clientX-r.left;
+  const monthIdx=Math.round((x-PAD.l)/cW*11);
+  if(monthIdx<0||monthIdx>11){ tooltip.style.display='none'; return; }
+
+  let html='<strong>'+MONTHS[monthIdx]+'</strong><br>';
+  [...active].forEach(idx=>{
+    const ds=DATASETS[idx];
+    const v=ds.data[monthIdx];
+    html+=`<span style="color:${COLORS[idx]};font-weight:600">${ds.name.split('—')[1]?.trim()||ds.name}</span>: ${v} ${ds.unit}<br>`;
+  });
+  document.getElementById('tt-city').innerHTML=html;
+  document.getElementById('tt-val').textContent='';
+  tooltip.style.display='block';
+  tooltip.style.left=(e.clientX+14)+'px';
+  tooltip.style.top=(e.clientY-10)+'px';
+};
+cvs.onmouseleave=()=>tooltip.style.display='none';
+
+// Legend
+function renderLegend(){
+  const leg=document.getElementById('legend');
+  leg.innerHTML='';
+  [...active].forEach(idx=>{
+    const ds=DATASETS[idx];
+    const item=document.createElement('div');
+    item.className='leg-item';
+    const dot=document.createElement('div');
+    dot.className='leg-dot';
+    dot.style.background=COLORS[idx];
+    const txt=document.createElement('span');
+    txt.textContent=ds.name;
+    item.appendChild(dot);
+    item.appendChild(txt);
+    leg.appendChild(item);
+  });
+}
+
+// Peak summary
+function renderPeaks(){
+  const pk=document.getElementById('peaks');
+  pk.innerHTML='';
+  if(!active.size) return;
+  [...active].forEach(idx=>{
+    const ds=DATASETS[idx];
+    const max=Math.max(...ds.data);
+    const peakMon=MONTHS[ds.data.indexOf(max)];
+    const min=Math.min(...ds.data);
+    const div=document.createElement('div');
+    div.className='peak-item';
+    div.innerHTML=`<div class="peak-city" style="color:${COLORS[idx]}">${ds.name.split('—')[1]?.trim()||ds.name}</div><div class="peak-val">Peak: ${max}${ds.unit} (${peakMon})<br>Low: ${min}${ds.unit}</div>`;
+    pk.appendChild(div);
+  });
+}
+
+// Analysis text
+function renderAnalysis(){
+  const a=getAnalysis();
+  document.getElementById('step1').innerHTML=a.step1;
+  document.getElementById('step2').innerHTML=a.step2;
+}
+
+// Buttons
+[...document.querySelectorAll('.ds-btn')].forEach(btn=>{
+  btn.onclick=()=>{
+    const i=parseInt(btn.dataset.idx);
+    if(active.has(i)){ active.delete(i); btn.classList.remove('active'); }
+    else { active.add(i); btn.classList.add('active'); }
+    drawChart(); renderLegend(); renderPeaks(); renderAnalysis();
+  };
+});
+
+window.addEventListener('resize', resize);
+drawChart();
+</script>
+</body>
+</html>
