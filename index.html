@@ -10,11 +10,10 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#f5f4f0;--surface:#ffffff;--surface2:#f0ede8;
-  --border:#d8d4cc;--border-hi:#b8b2a8;
+  --border:#d8d4cc;
   --text:#1a1814;--text2:#5a5650;--text3:#9a958e;
   --font:'DM Sans',-apple-system,sans-serif;
   --mono:'DM Mono',ui-monospace,monospace;
-  /* Series colours — accessible, distinct */
   --c0:#c0392b;--c1:#2c7be5;--c2:#1a7a4a;--c3:#e08020;--c4:#7c3aed;--c5:#0891b2;
 }
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;line-height:1.5}
@@ -24,332 +23,441 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .subtitle{font-size:14px;color:var(--text2);margin-bottom:24px;max-width:600px;line-height:1.55}
 .card{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px}
 
+/* Phase tabs */
+.phase-row{display:flex;gap:4px;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:4px;margin-bottom:20px}
+.phase-btn{flex:1;padding:9px 0;text-align:center;font-size:13px;font-weight:500;color:var(--text2);border-radius:7px;cursor:pointer;border:none;background:none;transition:all .15s;font-family:var(--font)}
+.phase-btn.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.08);border:1.5px solid var(--border)}
+
 /* Dataset selector */
-.ds-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.ds-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .ds-btn{padding:7px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:12.5px;font-weight:500;color:var(--text2);background:var(--surface);cursor:pointer;font-family:var(--font);transition:all .12s}
-.ds-btn.active{color:var(--surface);border-color:transparent}
-.ds-btn[data-idx="0"].active{background:var(--c0)}
-.ds-btn[data-idx="1"].active{background:var(--c1)}
-.ds-btn[data-idx="2"].active{background:var(--c2)}
-.ds-btn[data-idx="3"].active{background:var(--c3)}
-.ds-btn[data-idx="4"].active{background:var(--c4)}
-.ds-btn[data-idx="5"].active{background:var(--c5)}
+.ds-btn.active{color:#fff;border-color:transparent}
 
 /* Canvas */
-.canvas-wrap{position:relative;width:100%;overflow:hidden}
+.canvas-wrap{position:relative;width:100%;overflow:hidden;touch-action:none}
 canvas{display:block;width:100%;border-radius:8px;background:#fafaf8}
 
-/* Legend */
-.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px}
-.leg-item{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text2)}
-.leg-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+/* Prediction instruction banner */
+.predict-banner{background:#f0f5ff;border:1.5px solid #c0d4f8;border-radius:10px;padding:13px 18px;font-size:13.5px;color:#1a3a6b;line-height:1.6;margin-bottom:16px}
+.predict-banner strong{color:#1a3a6b}
 
-/* Tooltip */
-#tooltip{position:fixed;background:#1a1814;color:#fff;padding:8px 12px;border-radius:8px;font-size:12.5px;pointer-events:none;display:none;z-index:100;line-height:1.5;max-width:220px}
-.tt-city{font-weight:600;margin-bottom:2px}
-.tt-val{font-family:var(--mono)}
+/* Buttons */
+.btn{padding:8px 18px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:500;color:var(--text);background:var(--surface);cursor:pointer;font-family:var(--font);transition:all .12s}
+.btn:hover{border-color:var(--text)}
+.btn.primary{background:#2c7be5;border-color:#2c7be5;color:#fff}
+.btn.primary:hover{background:#1a5cb0}
+.btn.danger{border-color:#e8c5c5;color:#c0392b}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center}
 
-/* Step framework */
+/* Score */
+.score-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:16px 0}
+.score-item{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px}
+.score-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:3px}
+.score-val{font-family:var(--mono);font-size:18px;font-weight:600}
+.score-val.good{color:#1a7a4a}
+.score-val.warn{color:#e08020}
+
+/* Analysis panel */
 .steps{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
 @media(max-width:560px){.steps{grid-template-columns:1fr}}
 .step-card{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:16px}
 .step-num{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
 .step-title{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:8px}
 .step-body{font-size:13px;color:var(--text2);line-height:1.6}
-.step-body ul{padding-left:16px;margin-top:4px}
-.step-body li{margin-bottom:4px}
 
-/* Peak info */
-.peaks{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
-.peak-item{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12.5px;min-width:120px}
-.peak-city{font-weight:600;margin-bottom:3px}
-.peak-val{font-family:var(--mono);font-size:13px}
+/* Legend */
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text2)}
+.leg-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.leg-line{width:24px;height:3px;flex-shrink:0;border-radius:2px}
+
+#tooltip{position:fixed;background:#1a1814;color:#fff;padding:8px 12px;border-radius:8px;font-size:12.5px;pointer-events:none;display:none;z-index:100;line-height:1.5}
 </style>
 </head>
 <body>
-<div id="tooltip"><div class="tt-city" id="tt-city"></div><div class="tt-val" id="tt-val"></div></div>
+<div id="tooltip"></div>
 <div class="page">
   <div class="label">Chapter 5 · Tales by Dots and Lines</div>
   <div class="title">Line Graph Explorer</div>
-  <div class="subtitle">Toggle cities to compare their monthly patterns. Hover over data points to read exact values. Follow the two-step analysis framework the textbook introduces.</div>
+  <div class="subtitle">First, predict what you think the graph will look like by dragging points. Then reveal the real data and see how close you were.</div>
 
   <div class="card">
-    <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Dataset</div>
-    <div class="ds-row" id="dsRow">
-      <button class="ds-btn" data-idx="0">Temperature (Kerala)</button>
-      <button class="ds-btn" data-idx="1">Temperature (Punjab)</button>
+    <!-- Phase selector -->
+    <div class="phase-row">
+      <button class="phase-btn active" id="phPredict">1. Predict</button>
+      <button class="phase-btn" id="phReveal">2. Reveal</button>
+      <button class="phase-btn" id="phAnalyse">3. Analyse</button>
     </div>
-    <div class="ds-row" id="dsRow2">
-      <button class="ds-btn" data-idx="2">Rainfall (Udupi)</button>
-      <button class="ds-btn" data-idx="3">Rainfall (Mumbai)</button>
-      <button class="ds-btn" data-idx="4">Rainfall (Chennai)</button>
-      <button class="ds-btn" data-idx="5">Rainfall (Rameswaram)</button>
+
+    <!-- Dataset selector -->
+    <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Choose a dataset to predict</div>
+    <div class="ds-row" id="dsRow"></div>
+
+    <!-- Prediction banner (shown in predict phase) -->
+    <div class="predict-banner" id="predictBanner">
+      <strong>Your turn:</strong> Drag any dot up or down to set your prediction for that month. You can see the axis labels to guide your estimates. When you are done, click <strong>Reveal real data</strong>.
     </div>
 
     <div class="canvas-wrap">
       <canvas id="cvs" height="320"></canvas>
     </div>
+
     <div class="legend" id="legend"></div>
+
+    <div class="btn-row" id="btnRow">
+      <button class="btn primary" id="btnRevealData">Reveal real data</button>
+      <button class="btn danger" id="btnReset">Start over</button>
+    </div>
   </div>
 
-  <div class="card">
+  <!-- Score (shown after reveal) -->
+  <div class="card" id="scoreCard" style="display:none">
+    <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">How close was your prediction?</div>
+    <div class="score-grid" id="scoreGrid"></div>
+    <div id="scoreMsg" style="font-size:13.5px;color:var(--text2);line-height:1.6;margin-top:4px"></div>
+  </div>
+
+  <!-- Analysis (shown in phase 3) -->
+  <div class="card" id="analyseCard" style="display:none">
     <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">Two-step analysis</div>
     <div class="steps">
       <div class="step-card">
         <div class="step-num">Step 1</div>
         <div class="step-title">Identify what is given</div>
-        <div class="step-body" id="step1">Select one or more cities to begin.</div>
+        <div class="step-body" id="step1">Select a dataset to begin.</div>
       </div>
       <div class="step-card">
         <div class="step-num">Step 2</div>
         <div class="step-title">Infer and interpret</div>
-        <div class="step-body" id="step2">Observations and conclusions will appear here once you select data.</div>
+        <div class="step-body" id="step2">Observations will appear here.</div>
       </div>
     </div>
-    <div class="peaks" id="peaks"></div>
   </div>
 </div>
 
 <script>
-const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const COLORS=['#c0392b','#2c7be5','#1a7a4a','#e08020','#7c3aed','#0891b2'];
-const SHAPES=['circle','square','triangle','diamond','circle','square'];
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const COLORS = ['#c0392b','#2c7be5','#1a7a4a','#e08020','#7c3aed','#0891b2'];
 
-const DATASETS=[
-  {name:'Temperature — Kerala', unit:'°C', data:[30,31,32,33,32,29,28,28,29,30,30,29], type:'temp'},
-  {name:'Temperature — Punjab', unit:'°C', data:[19,21,25,30,35,38,36,35,35,32,27,23], type:'temp'},
-  {name:'Rainfall — Udupi', unit:'mm', data:[1,0,1,18,62,241,277,245,140,88,39,9], type:'rain'},
-  {name:'Rainfall — Mumbai', unit:'mm', data:[2,1,1,0,18,485,617,340,264,64,14,2], type:'rain'},
-  {name:'Rainfall — Chennai', unit:'mm', data:[24,11,6,14,52,53,83,98,119,306,310,188], type:'rain'},
-  {name:'Rainfall — Rameswaram', unit:'mm', data:[26,13,19,34,25,4,10,10,19,81,104,78], type:'rain'},
+const DATASETS = [
+  {name:'Temperature — Kerala', shortName:'Kerala temp.', unit:'°C', data:[30,31,32,33,32,29,28,28,29,30,30,29], minHint:25, maxHint:38,
+   step1:'Monthly maximum temperature in Kerala, in °C, across 12 months.',
+   step2:'Kerala stays nearly flat all year — a range of only about 5°C. The peak is around 33°C in April, lowest around 28°C in July. Kerala shows very little seasonal variation.'},
+  {name:'Temperature — Punjab', shortName:'Punjab temp.', unit:'°C', data:[19,21,25,30,35,38,36,35,35,32,27,23], minHint:15, maxHint:42,
+   step1:'Monthly maximum temperature in Punjab, in °C, across 12 months.',
+   step2:'Punjab varies dramatically — from around 19°C in January to 38°C in June, a range of nearly 20°C. It has a clear mountain-shaped curve. In winter it is far colder than Kerala.'},
+  {name:'Rainfall — Mumbai', shortName:'Mumbai rainfall', unit:'mm', data:[2,1,1,0,18,485,617,340,264,64,14,2], minHint:0, maxHint:650,
+   step1:'Monthly average rainfall in Mumbai (west coast), in mm, averaged over many years.',
+   step2:'Mumbai has an extreme pattern — almost no rain for 8 months, then a sudden surge dominated by the south-west monsoon. July alone exceeds 600 mm. The contrast between the wet and dry seasons is dramatic.'},
+  {name:'Rainfall — Chennai', shortName:'Chennai rainfall', unit:'mm', data:[24,11,6,14,52,53,83,98,119,306,310,188], minHint:0, maxHint:350,
+   step1:'Monthly average rainfall in Chennai (east coast), in mm.',
+   step2:'Chennai\'s pattern is nearly the reverse of Mumbai. Significant rain arrives in October–December from the north-east monsoon, peaking in November. The south-west monsoon brings only modest rainfall here.'},
+  {name:'Rainfall — Rameswaram', shortName:'Rameswaram rainfall', unit:'mm', data:[26,13,19,34,25,4,10,10,19,81,104,78], minHint:0, maxHint:130,
+   step1:'Monthly average rainfall in Rameswaram (tip of Tamil Nadu, east coast), in mm.',
+   step2:'Rameswaram has modest rainfall spread across the year with a mild peak in October–November. It stays relatively dry during the south-west monsoon months (June–August), unlike west-coast cities.'},
 ];
 
-const ANALYSIS={
-  '0':{ step1:'Monthly maximum temperature in Kerala, shown in °C. Data is marked for each of the 12 months.', step2:'Kerala stays mostly flat throughout the year — the range is only about 5°C. Peak is around 33°C in April, lowest around 28°C in July–August. Kerala shows little seasonal variation in maximum temperature.'},
-  '1':{ step1:'Monthly maximum temperature in Punjab, shown in °C. Data is marked for each of the 12 months.', step2:'Punjab shows a much wider range — from about 19°C in January up to 38°C in June. It drops sharply after June. Temperature varies more than 19°C across the year, unlike Kerala.'},
-  '0,1':{ step1:'Monthly maximum temperature for both Kerala and Punjab in 2023, in °C.', step2:'Punjab varies far more — reaching colder and warmer extremes. Kerala stays in a narrow band. In summer Punjab is hotter; in winter Punjab is colder. Both dip in July (monsoon). Punjab\'s line has a clear mountain shape; Kerala\'s is nearly flat.'},
-  '2':{ step1:'Monthly average rainfall in Udupi (west coast), in mm. This is an average across multiple years.', step2:'Udupi is dominated by the south-west monsoon. Almost no rain from Jan–Apr, then an extreme surge from June to August (peak ~277mm in July). The dry season is very pronounced.'},
-  '3':{ step1:'Monthly average rainfall in Mumbai (west coast), in mm.', step2:'Mumbai shows a similar west-coast pattern to Udupi but with even more intense peaks — June to September account for almost all annual rainfall. July alone exceeds 600mm.'},
-  '4':{ step1:'Monthly average rainfall in Chennai (east coast), in mm.', step2:'Chennai\'s pattern is inverted compared to west-coast cities. Rain comes from the north-east monsoon (Oct–Dec), peaking in November. This reflects Chennai\'s east-coast position.'},
-  '5':{ step1:'Monthly average rainfall in Rameswaram (east coast, tip of India), in mm.', step2:'Rameswaram receives very little rain from January to September, then picks up in October–December via the north-east monsoon. A different rhythm from west-coast cities.'},
-};
+let activeDs = 0;
+let phase = 'predict'; // 'predict' | 'reveal' | 'analyse'
+let userPts = []; // user's predicted y-values for 12 months, in data-units
+let revealed = false;
 
-let active = new Set();
+// Canvas layout constants
+const PAD = {l:54, r:22, t:30, b:42};
 
-function getKey(){ return [...active].sort().join(','); }
+function ds() { return DATASETS[activeDs]; }
 
-function getAnalysis(){
-  const key=getKey();
-  if(ANALYSIS[key]) return ANALYSIS[key];
-  // Fallback for arbitrary combos
-  const names=([...active]).map(i=>DATASETS[i].name.split('—')[1].trim());
+function initUserPts() {
+  // Start user prediction at mid-range for the dataset
+  const d = ds();
+  const mid = (d.minHint + d.maxHint) / 2;
+  userPts = MONTHS.map(() => mid);
+}
+
+// Coordinate transforms — computed fresh each call from current canvas size
+function layout() {
+  const cvs = document.getElementById('cvs');
+  const W = cvs.width / (window.devicePixelRatio||1);
+  const H = cvs.height / (window.devicePixelRatio||1);
+  const cW = W - PAD.l - PAD.r;
+  const cH = H - PAD.t - PAD.b;
+  const d = ds();
+  const minV = d.minHint, maxV = d.maxHint;
+  const range = maxV - minV;
   return {
-    step1:`Showing ${names.join(', ')}. Each series is plotted by month (Jan–Dec).`,
-    step2:`Compare the peaks and troughs across series. Notice which months see the highest values and how patterns differ between east coast, west coast, and inland locations.`
+    W, H, cW, cH,
+    cx: m => PAD.l + (m / 11) * cW,
+    cy: v => PAD.t + cH - ((v - minV) / range) * cH,
+    vy: y => minV + ((PAD.t + cH - y) / cH) * range,
+    minV, maxV, range
   };
 }
 
-function resize(){
-  const W = document.getElementById('cvs').parentElement.clientWidth;
-  document.getElementById('cvs').style.width=W+'px';
-  drawChart();
-}
+function drawChart() {
+  const cvs = document.getElementById('cvs');
+  const PR = window.devicePixelRatio || 1;
+  const W = cvs.parentElement.clientWidth;
+  cvs.width = W * PR; cvs.height = 320 * PR;
+  cvs.style.width = W + 'px'; cvs.style.height = '320px';
+  const ctx = cvs.getContext('2d');
+  ctx.scale(PR, PR);
 
-function drawChart(){
-  const cvs=document.getElementById('cvs');
-  const PR=window.devicePixelRatio||1;
-  const W=cvs.parentElement.clientWidth;
-  cvs.width=W*PR; cvs.height=320*PR;
-  cvs.style.width=W+'px'; cvs.style.height='320px';
-  const ctx=cvs.getContext('2d');
-  ctx.scale(PR,PR);
-  ctx.clearRect(0,0,W,320);
-  ctx.fillStyle='#fafaf8';
-  ctx.fillRect(0,0,W,320);
+  const L = layout();
+  ctx.fillStyle = '#fafaf8';
+  ctx.fillRect(0, 0, L.W, L.H);
 
-  if(!active.size){
-    ctx.fillStyle='#c0bab2';
-    ctx.font='14px DM Sans, sans-serif';
-    ctx.textAlign='center';
-    ctx.fillText('Select one or more series above to plot.',W/2,160);
-    return;
-  }
-
-  const PAD={l:52,r:20,t:24,b:40};
-  const cW=W-PAD.l-PAD.r, cH=320-PAD.t-PAD.b;
-
-  // Determine global min/max
-  let allVals=[];
-  active.forEach(i=>allVals.push(...DATASETS[i].data));
-  const minV=Math.min(0,...allVals);
-  const maxV=Math.max(...allVals);
-  const range=maxV-minV||1;
-
-  function cx(m){ return PAD.l + (m/11)*cW; }
-  function cy(v){ return PAD.t + cH - ((v-minV)/range)*cH; }
+  const d = ds();
+  const color = COLORS[activeDs];
 
   // Grid lines
-  const steps=5;
-  ctx.strokeStyle='#e8e4de';
-  ctx.lineWidth=1;
-  ctx.fillStyle='#9a958e';
-  ctx.font='11px DM Sans, sans-serif';
-  ctx.textAlign='right';
-  for(let i=0;i<=steps;i++){
-    const v=minV+(range/steps)*i;
-    const y=cy(v);
-    ctx.beginPath();
-    ctx.moveTo(PAD.l,y);
-    ctx.lineTo(W-PAD.r,y);
-    ctx.stroke();
-    ctx.fillText(Math.round(v),PAD.l-8,y+4);
+  const steps = 5;
+  ctx.font = '11px DM Sans, sans-serif';
+  ctx.fillStyle = '#9a958e';
+  for (let i = 0; i <= steps; i++) {
+    const v = d.minHint + (d.maxHint - d.minHint) / steps * i;
+    const y = L.cy(v);
+    ctx.beginPath(); ctx.strokeStyle = '#e8e4de'; ctx.lineWidth = 1;
+    ctx.moveTo(PAD.l, y); ctx.lineTo(L.W - PAD.r, y); ctx.stroke();
+    ctx.textAlign = 'right';
+    ctx.fillText(Math.round(v), PAD.l - 8, y + 4);
   }
 
-  // Month labels
-  ctx.fillStyle='#9a958e';
-  ctx.textAlign='center';
-  ctx.font='11px DM Sans, sans-serif';
-  MONTHS.forEach((m,i)=>{
-    ctx.fillText(m,cx(i),320-PAD.b+16);
-    ctx.beginPath();
-    ctx.strokeStyle='#d8d4cc';
-    ctx.lineWidth=1;
-    ctx.moveTo(cx(i),PAD.t);
-    ctx.lineTo(cx(i),320-PAD.b);
-    ctx.stroke();
+  // Month labels + vertical grid
+  MONTHS.forEach((m, i) => {
+    const x = L.cx(i);
+    ctx.beginPath(); ctx.strokeStyle = '#e8e4de'; ctx.lineWidth = 1;
+    ctx.moveTo(x, PAD.t); ctx.lineTo(x, L.H - PAD.b); ctx.stroke();
+    ctx.fillStyle = '#9a958e'; ctx.textAlign = 'center';
+    ctx.fillText(m, x, L.H - PAD.b + 16);
   });
 
   // Axes
-  ctx.beginPath();
-  ctx.strokeStyle='#b8b2a8';
-  ctx.lineWidth=1.5;
-  ctx.moveTo(PAD.l,PAD.t);
-  ctx.lineTo(PAD.l,320-PAD.b);
-  ctx.lineTo(W-PAD.r,320-PAD.b);
-  ctx.stroke();
+  ctx.beginPath(); ctx.strokeStyle = '#b8b2a8'; ctx.lineWidth = 1.5;
+  ctx.moveTo(PAD.l, PAD.t); ctx.lineTo(PAD.l, L.H - PAD.b);
+  ctx.lineTo(L.W - PAD.r, L.H - PAD.b); ctx.stroke();
 
   // Unit label
-  const units=[...active].map(i=>DATASETS[i].unit);
-  const unit=[...new Set(units)][0]||'';
-  ctx.save();
-  ctx.translate(14,160);
-  ctx.rotate(-Math.PI/2);
-  ctx.fillStyle='#9a958e';
-  ctx.font='11px DM Sans, sans-serif';
-  ctx.textAlign='center';
-  ctx.fillText(unit,0,0);
-  ctx.restore();
+  ctx.save(); ctx.translate(14, L.H/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle = '#9a958e'; ctx.font = '11px DM Sans, sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText(d.unit, 0, 0); ctx.restore();
 
-  // Draw series
-  [...active].forEach(idx=>{
-    const ds=DATASETS[idx];
-    const color=COLORS[idx];
-    ctx.strokeStyle=color;
-    ctx.lineWidth=2.5;
-    ctx.setLineDash([]);
+  // Draw user prediction line
+  if (phase === 'predict' || phase === 'reveal' || phase === 'analyse') {
     ctx.beginPath();
-    ds.data.forEach((v,m)=>{
-      if(m===0) ctx.moveTo(cx(m),cy(v));
-      else ctx.lineTo(cx(m),cy(v));
+    ctx.strokeStyle = phase === 'predict' ? color : 'rgba(180,180,180,.7)';
+    ctx.lineWidth = phase === 'predict' ? 2.5 : 1.5;
+    ctx.setLineDash(phase === 'predict' ? [] : [6, 4]);
+    userPts.forEach((v, i) => {
+      const x = L.cx(i), y = L.cy(v);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
     });
     ctx.stroke();
+    ctx.setLineDash([]);
 
-    // Dots
-    ds.data.forEach((v,m)=>{
-      const x=cx(m),y=cy(v);
+    // User dots (draggable)
+    userPts.forEach((v, i) => {
+      const x = L.cx(i), y = L.cy(v);
       ctx.beginPath();
-      ctx.fillStyle=color;
-      ctx.arc(x,y,5,0,Math.PI*2);
+      ctx.fillStyle = phase === 'predict' ? color : 'rgba(160,160,160,.6)';
+      ctx.arc(x, y, phase === 'predict' ? 7 : 5, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle='#fff';
-      ctx.lineWidth=1.5;
-      ctx.stroke();
+      if (phase === 'predict') {
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+      }
     });
-  });
+  }
+
+  // Draw real data (only in reveal/analyse)
+  if (phase === 'reveal' || phase === 'analyse') {
+    ctx.beginPath();
+    ctx.strokeStyle = color; ctx.lineWidth = 2.5;
+    d.data.forEach((v, i) => {
+      const x = L.cx(i), y = L.cy(v);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    d.data.forEach((v, i) => {
+      const x = L.cx(i), y = L.cy(v);
+      ctx.beginPath(); ctx.fillStyle = color;
+      ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+    });
+  }
+
+  // Phase label
+  ctx.fillStyle = '#9a958e'; ctx.font = '11px DM Sans'; ctx.textAlign = 'left';
+  if (phase === 'predict') ctx.fillText('Your prediction (drag dots)', PAD.l + 6, PAD.t - 10);
+  if (phase === 'reveal') {
+    ctx.fillStyle = 'rgba(160,160,160,.8)'; ctx.fillText('Your prediction', PAD.l + 6, PAD.t - 10);
+    ctx.fillStyle = color; ctx.textAlign = 'right';
+    ctx.fillText('Real data', L.W - PAD.r, PAD.t - 10);
+  }
 }
 
-// Tooltip
-const tooltip=document.getElementById('tooltip');
-const cvs=document.getElementById('cvs');
-cvs.onmousemove=(e)=>{
-  if(!active.size){ tooltip.style.display='none'; return; }
-  const r=cvs.getBoundingClientRect();
-  const W=r.width;
-  const PAD={l:52,r:20,t:24,b:40};
-  const cW=W-PAD.l-PAD.r;
-  const x=e.clientX-r.left;
-  const monthIdx=Math.round((x-PAD.l)/cW*11);
-  if(monthIdx<0||monthIdx>11){ tooltip.style.display='none'; return; }
+// Drag logic
+let dragIdx = -1;
 
-  let html='<strong>'+MONTHS[monthIdx]+'</strong><br>';
-  [...active].forEach(idx=>{
-    const ds=DATASETS[idx];
-    const v=ds.data[monthIdx];
-    html+=`<span style="color:${COLORS[idx]};font-weight:600">${ds.name.split('—')[1]?.trim()||ds.name}</span>: ${v} ${ds.unit}<br>`;
-  });
-  document.getElementById('tt-city').innerHTML=html;
-  document.getElementById('tt-val').textContent='';
-  tooltip.style.display='block';
-  tooltip.style.left=(e.clientX+14)+'px';
-  tooltip.style.top=(e.clientY-10)+'px';
-};
-cvs.onmouseleave=()=>tooltip.style.display='none';
-
-// Legend
-function renderLegend(){
-  const leg=document.getElementById('legend');
-  leg.innerHTML='';
-  [...active].forEach(idx=>{
-    const ds=DATASETS[idx];
-    const item=document.createElement('div');
-    item.className='leg-item';
-    const dot=document.createElement('div');
-    dot.className='leg-dot';
-    dot.style.background=COLORS[idx];
-    const txt=document.createElement('span');
-    txt.textContent=ds.name;
-    item.appendChild(dot);
-    item.appendChild(txt);
-    leg.appendChild(item);
-  });
+function nearestMonth(ex) {
+  const cvs = document.getElementById('cvs');
+  const r = cvs.getBoundingClientRect();
+  const W = r.width;
+  const cW = W - PAD.l - PAD.r;
+  const raw = (ex - r.left - PAD.l) / cW * 11;
+  return Math.max(0, Math.min(11, Math.round(raw)));
 }
 
-// Peak summary
-function renderPeaks(){
-  const pk=document.getElementById('peaks');
-  pk.innerHTML='';
-  if(!active.size) return;
-  [...active].forEach(idx=>{
-    const ds=DATASETS[idx];
-    const max=Math.max(...ds.data);
-    const peakMon=MONTHS[ds.data.indexOf(max)];
-    const min=Math.min(...ds.data);
-    const div=document.createElement('div');
-    div.className='peak-item';
-    div.innerHTML=`<div class="peak-city" style="color:${COLORS[idx]}">${ds.name.split('—')[1]?.trim()||ds.name}</div><div class="peak-val">Peak: ${max}${ds.unit} (${peakMon})<br>Low: ${min}${ds.unit}</div>`;
-    pk.appendChild(div);
-  });
+function clampedValue(ey) {
+  const cvs = document.getElementById('cvs');
+  const r = cvs.getBoundingClientRect();
+  const d = ds();
+  const H = r.height;
+  const cH = H - PAD.t - PAD.b;
+  const raw = d.minHint + ((PAD.t + cH - (ey - r.top)) / cH) * (d.maxHint - d.minHint);
+  return Math.max(d.minHint, Math.min(d.maxHint, raw));
 }
 
-// Analysis text
-function renderAnalysis(){
-  const a=getAnalysis();
-  document.getElementById('step1').innerHTML=a.step1;
-  document.getElementById('step2').innerHTML=a.step2;
+function startDrag(ex, ey) {
+  if (phase !== 'predict') return;
+  dragIdx = nearestMonth(ex);
+  userPts[dragIdx] = clampedValue(ey);
+  drawChart();
 }
 
-// Buttons
-[...document.querySelectorAll('.ds-btn')].forEach(btn=>{
-  btn.onclick=()=>{
-    const i=parseInt(btn.dataset.idx);
-    if(active.has(i)){ active.delete(i); btn.classList.remove('active'); }
-    else { active.add(i); btn.classList.add('active'); }
-    drawChart(); renderLegend(); renderPeaks(); renderAnalysis();
-  };
+function moveDrag(ex, ey) {
+  if (phase !== 'predict' || dragIdx < 0) return;
+  dragIdx = nearestMonth(ex);
+  userPts[dragIdx] = clampedValue(ey);
+  drawChart();
+}
+
+const cvs = document.getElementById('cvs');
+cvs.addEventListener('mousedown', e => { e.preventDefault(); startDrag(e.clientX, e.clientY); });
+cvs.addEventListener('mousemove', e => { if (dragIdx >= 0) moveDrag(e.clientX, e.clientY); });
+document.addEventListener('mouseup', () => { dragIdx = -1; });
+cvs.addEventListener('touchstart', e => { e.preventDefault(); const t = e.touches[0]; startDrag(t.clientX, t.clientY); }, {passive:false});
+cvs.addEventListener('touchmove', e => { e.preventDefault(); const t = e.touches[0]; moveDrag(t.clientX, t.clientY); }, {passive:false});
+document.addEventListener('touchend', () => { dragIdx = -1; });
+
+// Tooltip on hover (reveal phase)
+cvs.addEventListener('mousemove', e => {
+  if (phase !== 'reveal' && phase !== 'analyse') { document.getElementById('tooltip').style.display='none'; return; }
+  const mi = nearestMonth(e.clientX);
+  const d = ds();
+  const tt = document.getElementById('tooltip');
+  tt.innerHTML = `<strong>${MONTHS[mi]}</strong><br>
+    <span style="color:#aaa">Your guess:</span> ${Math.round(userPts[mi])} ${d.unit}<br>
+    <span style="color:${COLORS[activeDs]};font-weight:600">Real:</span> ${d.data[mi]} ${d.unit}`;
+  tt.style.display = 'block';
+  tt.style.left = (e.clientX + 14) + 'px';
+  tt.style.top = (e.clientY - 10) + 'px';
 });
+cvs.addEventListener('mouseleave', () => { document.getElementById('tooltip').style.display='none'; });
 
-window.addEventListener('resize', resize);
-drawChart();
+// Scoring
+function computeScore() {
+  const d = ds();
+  let totalErr = 0;
+  d.data.forEach((v, i) => { totalErr += Math.abs(v - userPts[i]); });
+  const avgErr = totalErr / 12;
+  const range = d.maxHint - d.minHint;
+  const pct = Math.max(0, 100 - (avgErr / range) * 100).toFixed(0);
+  return { avgErr: avgErr.toFixed(1), pct, unit: d.unit };
+}
+
+function showScore() {
+  const sc = computeScore();
+  const d = ds();
+  document.getElementById('scoreCard').style.display = 'block';
+  const grid = document.getElementById('scoreGrid');
+  grid.innerHTML = '';
+
+  const items = [
+    {label: 'Average error', val: sc.avgErr + ' ' + sc.unit, cls: parseFloat(sc.avgErr) < (d.maxHint-d.minHint)*0.1 ? 'good' : 'warn'},
+    {label: 'Accuracy', val: sc.pct + '%', cls: parseInt(sc.pct) > 80 ? 'good' : 'warn'},
+  ];
+  items.forEach(({label, val, cls}) => {
+    const div = document.createElement('div');
+    div.className = 'score-item';
+    div.innerHTML = `<div class="score-label">${label}</div><div class="score-val ${cls}">${val}</div>`;
+    grid.appendChild(div);
+  });
+
+  // Per-month worst misses
+  let worst = 0, worstMon = 0;
+  d.data.forEach((v, i) => { const e = Math.abs(v - userPts[i]); if (e > worst) { worst = e; worstMon = i; } });
+  const msg = parseInt(sc.pct) > 85
+    ? `Good prediction! Your biggest miss was ${MONTHS[worstMon]} (off by ${Math.round(worst)} ${d.unit}). Move to the Analyse tab to read the explanation.`
+    : `Your biggest miss was ${MONTHS[worstMon]} — off by ${Math.round(worst)} ${d.unit}. That is normal; these patterns are not obvious without data. Move to Analyse to find out why.`;
+  document.getElementById('scoreMsg').textContent = msg;
+}
+
+// Phase transitions
+function setPhase(p) {
+  phase = p;
+  document.querySelectorAll('.phase-btn').forEach((b, i) => {
+    b.classList.toggle('active', ['predict','reveal','analyse'][i] === p);
+  });
+  document.getElementById('predictBanner').style.display = p === 'predict' ? 'block' : 'none';
+  document.getElementById('btnRevealData').style.display = p === 'predict' ? 'inline-block' : 'none';
+  document.getElementById('btnReset').style.display = 'inline-block';
+  document.getElementById('scoreCard').style.display = (p === 'reveal' || p === 'analyse') ? 'block' : 'none';
+  document.getElementById('analyseCard').style.display = p === 'analyse' ? 'block' : 'none';
+  if (p === 'analyse') {
+    document.getElementById('step1').innerHTML = ds().step1;
+    document.getElementById('step2').innerHTML = ds().step2;
+  }
+  renderLegend();
+  drawChart();
+  if (p === 'reveal' || p === 'analyse') showScore();
+}
+
+document.getElementById('phPredict').onclick = () => setPhase('predict');
+document.getElementById('phReveal').onclick = () => { if (revealed) setPhase('reveal'); };
+document.getElementById('phAnalyse').onclick = () => { if (revealed) setPhase('analyse'); };
+document.getElementById('btnRevealData').onclick = () => { revealed = true; setPhase('reveal'); };
+document.getElementById('btnReset').onclick = () => {
+  revealed = false;
+  initUserPts();
+  setPhase('predict');
+};
+
+// Dataset buttons
+function buildDsBtns() {
+  const row = document.getElementById('dsRow');
+  row.innerHTML = '';
+  DATASETS.forEach((d, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'ds-btn' + (i === activeDs ? ' active' : '');
+    if (i === activeDs) btn.style.background = COLORS[i];
+    btn.dataset.idx = i;
+    btn.textContent = d.shortName;
+    btn.onclick = () => {
+      activeDs = i;
+      revealed = false;
+      initUserPts();
+      buildDsBtns();
+      setPhase('predict');
+    };
+    row.appendChild(btn);
+  });
+}
+
+function renderLegend() {
+  const leg = document.getElementById('legend');
+  leg.innerHTML = '';
+  const d = ds();
+  if (phase === 'predict') {
+    leg.innerHTML = `<div class="leg-item"><div class="leg-line" style="background:${COLORS[activeDs]}"></div><span>Your prediction for ${d.shortName}</span></div>`;
+  } else {
+    leg.innerHTML = `<div class="leg-item"><div class="leg-line" style="background:rgba(160,160,160,.7);border:1px dashed #aaa"></div><span>Your prediction</span></div>
+      <div class="leg-item"><div class="leg-dot" style="background:${COLORS[activeDs]}"></div><span>Real data — ${d.name}</span></div>`;
+  }
+}
+
+window.addEventListener('resize', drawChart);
+buildDsBtns();
+initUserPts();
+setPhase('predict');
 </script>
 </body>
 </html>
