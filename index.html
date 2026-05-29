@@ -133,7 +133,7 @@ canvas#lgraph{display:block;width:100%;touch-action:none}
   <button class="phase-btn" data-ph="analyse">3 · Analyse</button>
 </div>
 
-<div class="ds-bar">
+<div class="ds-bar" id="ds-bar">
   <span class="ds-lbl">Dataset</span>
 </div>
 
@@ -233,8 +233,9 @@ function layout(){
 
 function drawChart(){
   const cvs=document.getElementById('lgraph');
+  if(!cvs||!cvs.parentElement) return;
   const PR=Math.min(window.devicePixelRatio||1,2);
-  const W=cvs.parentElement.clientWidth-48;
+  const W=Math.max(200, cvs.parentElement.clientWidth-48);
   const H=300;
   cvs.width=W*PR;cvs.height=H*PR;cvs.style.width=W+'px';cvs.style.height=H+'px';
   const ctx=cvs.getContext('2d');ctx.scale(PR,PR);
