@@ -3,461 +3,387 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Line Graph Explorer — Ganita Prakash Grade 8</title>
+<title>Line Graph Explorer — Ch. 12</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f5f4f0;--surface:#ffffff;--surface2:#f0ede8;
-  --border:#d8d4cc;
-  --text:#1a1814;--text2:#5a5650;--text3:#9a958e;
-  --font:'DM Sans',-apple-system,sans-serif;
-  --mono:'DM Mono',ui-monospace,monospace;
-  --c0:#c0392b;--c1:#2c7be5;--c2:#1a7a4a;--c3:#e08020;--c4:#7c3aed;--c5:#0891b2;
+  --bg:#f4f2ec;--paper:#fff;--sand:#e8e4db;--ink:#1a1714;--rule:#ccc8be;
+  --blue:#1650a8;--green:#1a6e42;--red:#b83020;--amber:#c47a0a;
+  --display:'Archivo Black',Impact,sans-serif;
+  --mono:'DM Mono',monospace;--body:'DM Sans',sans-serif;
 }
-body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;line-height:1.5}
-.page{max-width:900px;margin:0 auto;padding:32px 24px}
-.label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
-.title{font-size:22px;font-weight:700;margin-bottom:6px}
-.subtitle{font-size:14px;color:var(--text2);margin-bottom:24px;max-width:600px;line-height:1.55}
-.card{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px}
+html{background:var(--bg)}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);min-height:100vh;
+  -webkit-font-smoothing:antialiased;padding:0}
 
-/* Phase tabs */
-.phase-row{display:flex;gap:4px;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:4px;margin-bottom:20px}
-.phase-btn{flex:1;padding:9px 0;text-align:center;font-size:13px;font-weight:500;color:var(--text2);border-radius:7px;cursor:pointer;border:none;background:none;transition:all .15s;font-family:var(--font)}
-.phase-btn.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.08);border:1.5px solid var(--border)}
+/* MASTHEAD */
+.masthead{border-bottom:3px solid var(--ink);padding:16px 24px 12px;
+  display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:baseline}
+.m-tag{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;opacity:.4;white-space:nowrap}
+.m-title{font-family:var(--display);font-size:clamp(22px,5.5vw,48px);line-height:.92;
+  text-align:center;letter-spacing:.02em}
+.m-right{font-family:var(--mono);font-size:10px;opacity:.4;text-align:right;white-space:nowrap}
+@media(max-width:480px){.masthead{grid-template-columns:1fr}.m-tag,.m-right{display:none}}
 
-/* Dataset selector */
-.ds-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.ds-btn{padding:7px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:12.5px;font-weight:500;color:var(--text2);background:var(--surface);cursor:pointer;font-family:var(--font);transition:all .12s}
-.ds-btn.active{color:#fff;border-color:transparent}
+/* PHASE TABS */
+.phase-bar{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  border-bottom:2px solid var(--ink);scrollbar-width:none;background:var(--paper)}
+.phase-bar::-webkit-scrollbar{display:none}
+.phase-btn{padding:12px 20px;border:none;border-bottom:3px solid transparent;
+  background:transparent;font-family:var(--display);font-size:16px;letter-spacing:.04em;
+  color:var(--ink);opacity:.35;cursor:pointer;white-space:nowrap;flex-shrink:0;
+  margin-bottom:-2px;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.phase-btn.active{opacity:1;border-bottom-color:var(--ink)}
 
-/* Canvas */
-.canvas-wrap{position:relative;width:100%;overflow:hidden;touch-action:none}
-canvas{display:block;width:100%;border-radius:8px;background:#fafaf8}
+/* DATASET BAR */
+.ds-bar{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  border-bottom:1px solid var(--rule);scrollbar-width:none;background:var(--sand);
+  padding:10px 24px;gap:6px}
+.ds-bar::-webkit-scrollbar{display:none}
+.ds-lbl{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink);opacity:.4;align-self:center;flex-shrink:0;margin-right:4px}
+.ds-btn{padding:6px 14px;border:1.5px solid var(--rule);background:var(--paper);
+  font-family:var(--mono);font-size:11px;font-weight:600;color:var(--ink);opacity:.6;
+  cursor:pointer;flex-shrink:0;transition:all .12s;-webkit-tap-highlight-color:transparent}
+.ds-btn:hover{opacity:1;border-color:var(--ink)}
+.ds-btn.active{color:#fff;border-color:transparent;opacity:1}
 
-/* Prediction instruction banner */
-.predict-banner{background:#f0f5ff;border:1.5px solid #c0d4f8;border-radius:10px;padding:13px 18px;font-size:13.5px;color:#1a3a6b;line-height:1.6;margin-bottom:16px}
-.predict-banner strong{color:#1a3a6b}
+/* PREDICT BANNER */
+.predict-banner{padding:14px 24px;background:var(--blue);border-bottom:1px solid var(--rule)}
+.pb-text{font-family:var(--mono);font-size:12px;color:#fff;line-height:1.7}
+.pb-text strong{font-weight:700}
 
-/* Buttons */
-.btn{padding:8px 18px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:500;color:var(--text);background:var(--surface);cursor:pointer;font-family:var(--font);transition:all .12s}
-.btn:hover{border-color:var(--text)}
-.btn.primary{background:#2c7be5;border-color:#2c7be5;color:#fff}
-.btn.primary:hover{background:#1a5cb0}
-.btn.danger{border-color:#e8c5c5;color:#c0392b}
-.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center}
+/* CANVAS */
+.canvas-section{background:var(--sand);border-bottom:1px solid var(--rule);padding:16px 24px}
+canvas#lgraph{display:block;width:100%;touch-action:none}
+.canvas-hint{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink);opacity:.3;text-align:center;margin-top:6px}
 
-/* Score */
-.score-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:16px 0}
-.score-item{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px}
-.score-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:3px}
-.score-val{font-family:var(--mono);font-size:18px;font-weight:600}
-.score-val.good{color:#1a7a4a}
-.score-val.warn{color:#e08020}
+/* LEGEND */
+.legend-row{padding:10px 24px;border-bottom:1px solid var(--rule);
+  display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink);opacity:.65}
+.leg-line{width:24px;height:3px;border-radius:2px}
+.leg-dot{width:10px;height:10px;border-radius:50%}
 
-/* Analysis panel */
-.steps{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
-@media(max-width:560px){.steps{grid-template-columns:1fr}}
-.step-card{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:16px}
-.step-num{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
-.step-title{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:8px}
-.step-body{font-size:13px;color:var(--text2);line-height:1.6}
+/* CONTROLS */
+.ctrl-bar{padding:12px 24px;border-bottom:1px solid var(--rule);background:var(--paper);
+  display:flex;gap:8px;flex-wrap:wrap}
+.c-btn{padding:8px 16px;border:1.5px solid var(--rule);background:transparent;
+  font-family:var(--mono);font-size:11px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--ink);opacity:.6;cursor:pointer;transition:all .12s}
+.c-btn:hover{opacity:1;border-color:var(--ink)}
+.c-btn.primary{background:var(--ink);color:#f4f2ec;border-color:var(--ink);opacity:1}
+.c-btn.danger{color:var(--red);border-color:#e0b0a8}
 
-/* Legend */
-.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px}
-.leg-item{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text2)}
-.leg-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
-.leg-line{width:24px;height:3px;flex-shrink:0;border-radius:2px}
+/* SCORE */
+.score-section{padding:18px 24px;background:var(--paper);border-bottom:1px solid var(--rule)}
+.score-head{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink);opacity:.4;margin-bottom:12px}
+.score-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:12px}
+.sc-card{padding:12px 14px;border:1.5px solid var(--rule);background:var(--sand)}
+.sc-lbl{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink);opacity:.4;margin-bottom:4px}
+.sc-val{font-family:'Archivo Black',Impact,sans-serif;font-size:clamp(20px,3vw,28px);
+  letter-spacing:.02em;line-height:1}
+.sc-val.good{color:var(--green)}
+.sc-val.warn{color:var(--amber)}
+.score-msg{font-size:13px;line-height:1.65;color:var(--ink);opacity:.65}
 
-#tooltip{position:fixed;background:#1a1814;color:#fff;padding:8px 12px;border-radius:8px;font-size:12.5px;pointer-events:none;display:none;z-index:100;line-height:1.5}
+/* ANALYSE */
+.analyse-section{padding:18px 24px;border-bottom:1px solid var(--rule)}
+.an-head{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink);opacity:.4;margin-bottom:12px}
+.an-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:500px){.an-grid{grid-template-columns:1fr}}
+.an-card{padding:14px 16px;border:1.5px solid var(--rule);background:var(--sand)}
+.an-num{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink);opacity:.35;margin-bottom:4px}
+.an-title{font-family:var(--display);font-size:16px;letter-spacing:.04em;margin-bottom:6px}
+.an-body{font-size:13px;line-height:1.65;color:var(--ink);opacity:.65}
+
+/* INSIGHT */
+.insight-row{padding:16px 24px;display:grid;grid-template-columns:3px 1fr;gap:14px}
+.ins-bar{background:var(--amber)}
+.ins-text{font-size:13.5px;line-height:1.75;color:var(--ink);opacity:.7}
+.ins-text strong{opacity:1}
+
+#lg-tooltip{position:fixed;background:var(--ink);color:#f0ece3;padding:8px 12px;
+  font-family:var(--mono);font-size:11px;line-height:1.6;pointer-events:none;
+  display:none;z-index:100}
 </style>
 </head>
 <body>
-<div id="tooltip"></div>
-<div class="page">
-  <div class="label">Chapter 5 · Tales by Dots and Lines</div>
-  <div class="title">Line Graph Explorer</div>
-  <div class="subtitle">First, predict what you think the graph will look like by dragging points. Then reveal the real data and see how close you were.</div>
 
-  <div class="card">
-    <!-- Phase selector -->
-    <div class="phase-row">
-      <button class="phase-btn active" id="phPredict">1. Predict</button>
-      <button class="phase-btn" id="phReveal">2. Reveal</button>
-      <button class="phase-btn" id="phAnalyse">3. Analyse</button>
-    </div>
+<div id="lg-tooltip"></div>
 
-    <!-- Dataset selector -->
-    <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Choose a dataset to predict</div>
-    <div class="ds-row" id="dsRow"></div>
+<div class="masthead">
+  <div class="m-tag">Ch. 12 · Data Handling</div>
+  <div class="m-title">Line Graph Explorer</div>
+  <div class="m-right">Grade 8 · Oxford / Bhanzu</div>
+</div>
 
-    <!-- Prediction banner (shown in predict phase) -->
-    <div class="predict-banner" id="predictBanner">
-      <strong>Your turn:</strong> Drag any dot up or down to set your prediction for that month. You can see the axis labels to guide your estimates. When you are done, click <strong>Reveal real data</strong>.
-    </div>
+<div class="phase-bar">
+  <button class="phase-btn active" data-ph="predict">1 · Predict</button>
+  <button class="phase-btn" data-ph="reveal">2 · Reveal</button>
+  <button class="phase-btn" data-ph="analyse">3 · Analyse</button>
+</div>
 
-    <div class="canvas-wrap">
-      <canvas id="cvs" height="320"></canvas>
-    </div>
+<div class="ds-bar">
+  <span class="ds-lbl">Dataset</span>
+</div>
 
-    <div class="legend" id="legend"></div>
+<div class="predict-banner" id="predict-banner">
+  <div class="pb-text"><strong>Your turn:</strong> Drag any dot up or down to set your prediction. When done, click <strong>Reveal real data</strong> to see how close you were.</div>
+</div>
 
-    <div class="btn-row" id="btnRow">
-      <button class="btn primary" id="btnRevealData">Reveal real data</button>
-      <button class="btn danger" id="btnReset">Start over</button>
-    </div>
-  </div>
+<div class="canvas-section">
+  <canvas id="lgraph" height="300"></canvas>
+  <div class="canvas-hint" id="canvas-hint">drag dots to predict</div>
+</div>
 
-  <!-- Score (shown after reveal) -->
-  <div class="card" id="scoreCard" style="display:none">
-    <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">How close was your prediction?</div>
-    <div class="score-grid" id="scoreGrid"></div>
-    <div id="scoreMsg" style="font-size:13.5px;color:var(--text2);line-height:1.6;margin-top:4px"></div>
-  </div>
+<div class="legend-row" id="legend-row"></div>
 
-  <!-- Analysis (shown in phase 3) -->
-  <div class="card" id="analyseCard" style="display:none">
-    <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">Two-step analysis</div>
-    <div class="steps">
-      <div class="step-card">
-        <div class="step-num">Step 1</div>
-        <div class="step-title">Identify what is given</div>
-        <div class="step-body" id="step1">Select a dataset to begin.</div>
-      </div>
-      <div class="step-card">
-        <div class="step-num">Step 2</div>
-        <div class="step-title">Infer and interpret</div>
-        <div class="step-body" id="step2">Observations will appear here.</div>
-      </div>
-    </div>
+<div class="ctrl-bar">
+  <button class="c-btn primary" id="btn-reveal">Reveal real data</button>
+  <button class="c-btn danger" id="btn-reset">Start over</button>
+</div>
+
+<div class="score-section" id="score-section" style="display:none">
+  <div class="score-head">How close was your prediction?</div>
+  <div class="score-grid" id="score-grid"></div>
+  <div class="score-msg" id="score-msg"></div>
+</div>
+
+<div class="analyse-section" id="analyse-section" style="display:none">
+  <div class="an-head">Two-step analysis</div>
+  <div class="an-grid">
+    <div class="an-card"><div class="an-num">Step 1</div><div class="an-title">What is given</div><div class="an-body" id="an-step1">Select a dataset.</div></div>
+    <div class="an-card"><div class="an-num">Step 2</div><div class="an-title">Infer & interpret</div><div class="an-body" id="an-step2">Observations appear here.</div></div>
   </div>
 </div>
 
-<script>
-const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const COLORS = ['#c0392b','#2c7be5','#1a7a4a','#e08020','#7c3aed','#0891b2'];
+<div class="insight-row">
+  <div class="ins-bar"></div>
+  <p class="ins-text">A line graph shows <strong>change over time</strong>. The slope of each segment tells you the rate of change — steep = rapid change, flat = little change. Comparing two datasets on the same graph reveals which changes together.</p>
+</div>
 
-const DATASETS = [
-  {name:'Temperature — Kerala', shortName:'Kerala temp.', unit:'°C', data:[30,31,32,33,32,29,28,28,29,30,30,29], minHint:25, maxHint:38,
-   step1:'Monthly maximum temperature in Kerala, in °C, across 12 months.',
-   step2:'Kerala stays nearly flat all year — a range of only about 5°C. The peak is around 33°C in April, lowest around 28°C in July. Kerala shows very little seasonal variation.'},
-  {name:'Temperature — Punjab', shortName:'Punjab temp.', unit:'°C', data:[19,21,25,30,35,38,36,35,35,32,27,23], minHint:15, maxHint:42,
-   step1:'Monthly maximum temperature in Punjab, in °C, across 12 months.',
-   step2:'Punjab varies dramatically — from around 19°C in January to 38°C in June, a range of nearly 20°C. It has a clear mountain-shaped curve. In winter it is far colder than Kerala.'},
-  {name:'Rainfall — Mumbai', shortName:'Mumbai rainfall', unit:'mm', data:[2,1,1,0,18,485,617,340,264,64,14,2], minHint:0, maxHint:650,
-   step1:'Monthly average rainfall in Mumbai (west coast), in mm, averaged over many years.',
-   step2:'Mumbai has an extreme pattern — almost no rain for 8 months, then a sudden surge dominated by the south-west monsoon. July alone exceeds 600 mm. The contrast between the wet and dry seasons is dramatic.'},
-  {name:'Rainfall — Chennai', shortName:'Chennai rainfall', unit:'mm', data:[24,11,6,14,52,53,83,98,119,306,310,188], minHint:0, maxHint:350,
-   step1:'Monthly average rainfall in Chennai (east coast), in mm.',
-   step2:'Chennai\'s pattern is nearly the reverse of Mumbai. Significant rain arrives in October–December from the north-east monsoon, peaking in November. The south-west monsoon brings only modest rainfall here.'},
-  {name:'Rainfall — Rameswaram', shortName:'Rameswaram rainfall', unit:'mm', data:[26,13,19,34,25,4,10,10,19,81,104,78], minHint:0, maxHint:130,
-   step1:'Monthly average rainfall in Rameswaram (tip of Tamil Nadu, east coast), in mm.',
-   step2:'Rameswaram has modest rainfall spread across the year with a mild peak in October–November. It stays relatively dry during the south-west monsoon months (June–August), unlike west-coast cities.'},
+<script>
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const COLORS=['#b83020','#1650a8','#1a6e42','#c47a0a','#7a4ab0','#0e7490'];
+
+const DATASETS=[
+  {name:'Temp — Kerala',short:'Kerala',unit:'°C',data:[30,31,32,33,32,29,28,28,29,30,30,29],min:25,max:38,
+   step1:'Monthly maximum temperature in Kerala (°C), averaged over many years.',
+   step2:'Kerala stays nearly flat — only ~5°C range year-round. April is warmest (~33°C), July is coolest (~28°C). Very little seasonal variation because it is close to the equator.'},
+  {name:'Temp — Punjab',short:'Punjab',unit:'°C',data:[19,21,25,30,35,38,36,35,35,32,27,23],min:15,max:42,
+   step1:'Monthly maximum temperature in Punjab (°C), averaged over many years.',
+   step2:'Punjab swings dramatically — 19°C in January to 38°C in June, a range of ~20°C. Clear mountain-shaped curve. In winter it is far colder than Kerala.'},
+  {name:'Rain — Mumbai',short:'Mumbai',unit:'mm',data:[2,1,1,0,18,485,617,340,264,64,14,2],min:0,max:650,
+   step1:'Monthly average rainfall in Mumbai (mm) — a west-coast city.',
+   step2:'Almost zero rain for 8 months, then an explosive surge. July alone exceeds 600 mm (SW monsoon). The contrast between wet and dry seasons is extreme.'},
+  {name:'Rain — Chennai',short:'Chennai',unit:'mm',data:[24,11,6,14,52,53,83,98,119,306,310,188],min:0,max:350,
+   step1:'Monthly average rainfall in Chennai (mm) — an east-coast city.',
+   step2:'Nearly the reverse of Mumbai — significant rain arrives Oct–Dec (NE monsoon), peaking in November. The SW monsoon brings only modest rain here.'},
+  {name:'Rain — Rameswaram',short:'Rameswaram',unit:'mm',data:[26,13,19,34,25,4,10,10,19,81,104,78],min:0,max:130,
+   step1:'Monthly average rainfall in Rameswaram (mm) — tip of Tamil Nadu.',
+   step2:'Modest rainfall spread across the year with a mild Oct–Nov peak. Stays dry during SW monsoon (June–August). Compare with west-coast cities.'},
 ];
 
-let activeDs = 0;
-let phase = 'predict'; // 'predict' | 'reveal' | 'analyse'
-let userPts = []; // user's predicted y-values for 12 months, in data-units
-let revealed = false;
+let dsIdx=0,phase='predict',revealed=false;
+let userPts=[];
+const PAD={l:48,r:18,t:28,b:40};
+let dragIdx=-1;
 
-// Canvas layout constants
-const PAD = {l:54, r:22, t:30, b:42};
+function ds(){return DATASETS[dsIdx];}
+function initUser(){const d=ds();userPts=MONTHS.map(()=>(d.min+d.max)/2);}
 
-function ds() { return DATASETS[activeDs]; }
-
-function initUserPts() {
-  // Start user prediction at mid-range for the dataset
-  const d = ds();
-  const mid = (d.minHint + d.maxHint) / 2;
-  userPts = MONTHS.map(() => mid);
+function buildDsBtns(){
+  const bar=document.getElementById('ds-bar');
+  // Keep the label, rebuild buttons
+  while(bar.children.length>1) bar.removeChild(bar.lastChild);
+  DATASETS.forEach((d,i)=>{
+    const b=document.createElement('button');
+    b.className='ds-btn'+(i===dsIdx?' active':'');
+    if(i===dsIdx) b.style.background=COLORS[i];
+    b.textContent=d.short;
+    b.addEventListener('pointerdown',e=>{e.preventDefault();
+      if(i===dsIdx)return;dsIdx=i;revealed=false;initUser();buildDsBtns();setPhase('predict');
+    });
+    bar.appendChild(b);
+  });
 }
 
-// Coordinate transforms — computed fresh each call from current canvas size
-function layout() {
-  const cvs = document.getElementById('cvs');
-  const W = cvs.width / (window.devicePixelRatio||1);
-  const H = cvs.height / (window.devicePixelRatio||1);
-  const cW = W - PAD.l - PAD.r;
-  const cH = H - PAD.t - PAD.b;
-  const d = ds();
-  const minV = d.minHint, maxV = d.maxHint;
-  const range = maxV - minV;
-  return {
-    W, H, cW, cH,
-    cx: m => PAD.l + (m / 11) * cW,
-    cy: v => PAD.t + cH - ((v - minV) / range) * cH,
-    vy: y => minV + ((PAD.t + cH - y) / cH) * range,
-    minV, maxV, range
-  };
+function layout(){
+  const cvs=document.getElementById('lgraph');
+  const W=cvs.width/(window.devicePixelRatio||1);
+  const H=cvs.height/(window.devicePixelRatio||1);
+  const cW=W-PAD.l-PAD.r,cH=H-PAD.t-PAD.b;
+  const d=ds();
+  return{W,H,cW,cH,
+    cx:m=>PAD.l+(m/11)*cW,
+    cy:v=>PAD.t+cH-((v-d.min)/(d.max-d.min))*cH,
+    vy:y=>d.min+((PAD.t+cH-y)/cH)*(d.max-d.min),
+    min:d.min,max:d.max};
 }
 
-function drawChart() {
-  const cvs = document.getElementById('cvs');
-  const PR = window.devicePixelRatio || 1;
-  const W = cvs.parentElement.clientWidth;
-  cvs.width = W * PR; cvs.height = 320 * PR;
-  cvs.style.width = W + 'px'; cvs.style.height = '320px';
-  const ctx = cvs.getContext('2d');
-  ctx.scale(PR, PR);
+function drawChart(){
+  const cvs=document.getElementById('lgraph');
+  const PR=Math.min(window.devicePixelRatio||1,2);
+  const W=cvs.parentElement.clientWidth-48;
+  const H=300;
+  cvs.width=W*PR;cvs.height=H*PR;cvs.style.width=W+'px';cvs.style.height=H+'px';
+  const ctx=cvs.getContext('2d');ctx.scale(PR,PR);
+  const L=layout();
+  const d=ds();
+  const color=COLORS[dsIdx];
 
-  const L = layout();
-  ctx.fillStyle = '#fafaf8';
-  ctx.fillRect(0, 0, L.W, L.H);
+  ctx.fillStyle='#f4f2ec';ctx.fillRect(0,0,L.W,L.H);
 
-  const d = ds();
-  const color = COLORS[activeDs];
-
-  // Grid lines
-  const steps = 5;
-  ctx.font = '11px DM Sans, sans-serif';
-  ctx.fillStyle = '#9a958e';
-  for (let i = 0; i <= steps; i++) {
-    const v = d.minHint + (d.maxHint - d.minHint) / steps * i;
-    const y = L.cy(v);
-    ctx.beginPath(); ctx.strokeStyle = '#e8e4de'; ctx.lineWidth = 1;
-    ctx.moveTo(PAD.l, y); ctx.lineTo(L.W - PAD.r, y); ctx.stroke();
-    ctx.textAlign = 'right';
-    ctx.fillText(Math.round(v), PAD.l - 8, y + 4);
+  // Grid
+  for(let i=0;i<=5;i++){
+    const v=d.min+(d.max-d.min)/5*i;
+    const y=L.cy(v);
+    ctx.beginPath();ctx.strokeStyle='#e0dcd4';ctx.lineWidth=1;
+    ctx.moveTo(PAD.l,y);ctx.lineTo(L.W-PAD.r,y);ctx.stroke();
+    ctx.fillStyle='#9a958e';ctx.font='10px DM Mono';ctx.textAlign='right';
+    ctx.fillText(Math.round(v),PAD.l-6,y+4);
   }
-
-  // Month labels + vertical grid
-  MONTHS.forEach((m, i) => {
-    const x = L.cx(i);
-    ctx.beginPath(); ctx.strokeStyle = '#e8e4de'; ctx.lineWidth = 1;
-    ctx.moveTo(x, PAD.t); ctx.lineTo(x, L.H - PAD.b); ctx.stroke();
-    ctx.fillStyle = '#9a958e'; ctx.textAlign = 'center';
-    ctx.fillText(m, x, L.H - PAD.b + 16);
+  MONTHS.forEach((m,i)=>{
+    const x=L.cx(i);
+    ctx.beginPath();ctx.strokeStyle='#e0dcd4';ctx.lineWidth=1;
+    ctx.moveTo(x,PAD.t);ctx.lineTo(x,L.H-PAD.b);ctx.stroke();
+    ctx.fillStyle='#9a958e';ctx.font='10px DM Sans';ctx.textAlign='center';
+    ctx.fillText(m,x,L.H-PAD.b+16);
   });
 
   // Axes
-  ctx.beginPath(); ctx.strokeStyle = '#b8b2a8'; ctx.lineWidth = 1.5;
-  ctx.moveTo(PAD.l, PAD.t); ctx.lineTo(PAD.l, L.H - PAD.b);
-  ctx.lineTo(L.W - PAD.r, L.H - PAD.b); ctx.stroke();
+  ctx.beginPath();ctx.strokeStyle='#b8b2a8';ctx.lineWidth=1.5;
+  ctx.moveTo(PAD.l,PAD.t);ctx.lineTo(PAD.l,L.H-PAD.b);ctx.lineTo(L.W-PAD.r,L.H-PAD.b);ctx.stroke();
+  ctx.save();ctx.translate(14,L.H/2);ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='#9a958e';ctx.font='10px DM Sans';ctx.textAlign='center';
+  ctx.fillText(d.unit,0,0);ctx.restore();
 
-  // Unit label
-  ctx.save(); ctx.translate(14, L.H/2); ctx.rotate(-Math.PI/2);
-  ctx.fillStyle = '#9a958e'; ctx.font = '11px DM Sans, sans-serif'; ctx.textAlign = 'center';
-  ctx.fillText(d.unit, 0, 0); ctx.restore();
-
-  // Draw user prediction line
-  if (phase === 'predict' || phase === 'reveal' || phase === 'analyse') {
+  // User prediction
+  ctx.beginPath();
+  ctx.strokeStyle=phase==='predict'?color:'rgba(160,156,150,.8)';
+  ctx.lineWidth=phase==='predict'?2.5:1.5;
+  if(phase!=='predict') ctx.setLineDash([6,4]);
+  userPts.forEach((v,i)=>i===0?ctx.moveTo(L.cx(i),L.cy(v)):ctx.lineTo(L.cx(i),L.cy(v)));
+  ctx.stroke();ctx.setLineDash([]);
+  userPts.forEach((v,i)=>{
     ctx.beginPath();
-    ctx.strokeStyle = phase === 'predict' ? color : 'rgba(180,180,180,.7)';
-    ctx.lineWidth = phase === 'predict' ? 2.5 : 1.5;
-    ctx.setLineDash(phase === 'predict' ? [] : [6, 4]);
-    userPts.forEach((v, i) => {
-      const x = L.cx(i), y = L.cy(v);
-      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-    });
+    ctx.fillStyle=phase==='predict'?color:'rgba(150,146,140,.7)';
+    ctx.arc(L.cx(i),L.cy(v),phase==='predict'?8:5,0,Math.PI*2);ctx.fill();
+    if(phase==='predict'){ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();}
+  });
+
+  // Real data
+  if(phase==='reveal'||phase==='analyse'){
+    ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=2.5;
+    d.data.forEach((v,i)=>i===0?ctx.moveTo(L.cx(i),L.cy(v)):ctx.lineTo(L.cx(i),L.cy(v)));
     ctx.stroke();
-    ctx.setLineDash([]);
-
-    // User dots (draggable)
-    userPts.forEach((v, i) => {
-      const x = L.cx(i), y = L.cy(v);
-      ctx.beginPath();
-      ctx.fillStyle = phase === 'predict' ? color : 'rgba(160,160,160,.6)';
-      ctx.arc(x, y, phase === 'predict' ? 7 : 5, 0, Math.PI * 2);
-      ctx.fill();
-      if (phase === 'predict') {
-        ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
-      }
+    d.data.forEach((v,i)=>{
+      ctx.beginPath();ctx.fillStyle=color;ctx.arc(L.cx(i),L.cy(v),5,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
     });
   }
 
-  // Draw real data (only in reveal/analyse)
-  if (phase === 'reveal' || phase === 'analyse') {
-    ctx.beginPath();
-    ctx.strokeStyle = color; ctx.lineWidth = 2.5;
-    d.data.forEach((v, i) => {
-      const x = L.cx(i), y = L.cy(v);
-      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-    });
-    ctx.stroke();
-    d.data.forEach((v, i) => {
-      const x = L.cx(i), y = L.cy(v);
-      ctx.beginPath(); ctx.fillStyle = color;
-      ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
-    });
-  }
-
-  // Phase label
-  ctx.fillStyle = '#9a958e'; ctx.font = '11px DM Sans'; ctx.textAlign = 'left';
-  if (phase === 'predict') ctx.fillText('Your prediction (drag dots)', PAD.l + 6, PAD.t - 10);
-  if (phase === 'reveal') {
-    ctx.fillStyle = 'rgba(160,160,160,.8)'; ctx.fillText('Your prediction', PAD.l + 6, PAD.t - 10);
-    ctx.fillStyle = color; ctx.textAlign = 'right';
-    ctx.fillText('Real data', L.W - PAD.r, PAD.t - 10);
+  // Legend text
+  ctx.fillStyle='#9a958e';ctx.font='10px DM Sans';ctx.textAlign='left';
+  if(phase==='predict') ctx.fillText('Your prediction (drag dots)',PAD.l+4,PAD.t-10);
+  if(phase==='reveal'||phase==='analyse'){
+    ctx.fillStyle='rgba(150,146,140,.8)';ctx.fillText('Your prediction',PAD.l+4,PAD.t-10);
+    ctx.fillStyle=color;ctx.textAlign='right';ctx.fillText('Real data: '+d.name,L.W-PAD.r,PAD.t-10);
   }
 }
 
-// Drag logic
-let dragIdx = -1;
-
-function nearestMonth(ex) {
-  const cvs = document.getElementById('cvs');
-  const r = cvs.getBoundingClientRect();
-  const W = r.width;
-  const cW = W - PAD.l - PAD.r;
-  const raw = (ex - r.left - PAD.l) / cW * 11;
-  return Math.max(0, Math.min(11, Math.round(raw)));
+function renderLegend(){
+  const el=document.getElementById('legend-row');el.innerHTML='';
+  const d=ds();
+  if(phase==='predict'){
+    el.innerHTML=`<div class="leg-item"><div class="leg-line" style="background:${COLORS[dsIdx]}"></div><span>Your prediction — ${d.short}</span></div>`;
+  } else {
+    el.innerHTML=`<div class="leg-item"><div class="leg-line" style="background:rgba(150,146,140,.8);border-top:2px dashed #aaa"></div><span>Your prediction</span></div>
+      <div class="leg-item"><div class="leg-dot" style="background:${COLORS[dsIdx]}"></div><span>Real data — ${d.name}</span></div>`;
+  }
 }
 
-function clampedValue(ey) {
-  const cvs = document.getElementById('cvs');
-  const r = cvs.getBoundingClientRect();
-  const d = ds();
-  const H = r.height;
-  const cH = H - PAD.t - PAD.b;
-  const raw = d.minHint + ((PAD.t + cH - (ey - r.top)) / cH) * (d.maxHint - d.minHint);
-  return Math.max(d.minHint, Math.min(d.maxHint, raw));
-}
-
-function startDrag(ex, ey) {
-  if (phase !== 'predict') return;
-  dragIdx = nearestMonth(ex);
-  userPts[dragIdx] = clampedValue(ey);
-  drawChart();
-}
-
-function moveDrag(ex, ey) {
-  if (phase !== 'predict' || dragIdx < 0) return;
-  dragIdx = nearestMonth(ex);
-  userPts[dragIdx] = clampedValue(ey);
-  drawChart();
-}
-
-const cvs = document.getElementById('cvs');
-cvs.addEventListener('mousedown', e => { e.preventDefault(); startDrag(e.clientX, e.clientY); });
-cvs.addEventListener('mousemove', e => { if (dragIdx >= 0) moveDrag(e.clientX, e.clientY); });
-document.addEventListener('mouseup', () => { dragIdx = -1; });
-cvs.addEventListener('touchstart', e => { e.preventDefault(); const t = e.touches[0]; startDrag(t.clientX, t.clientY); }, {passive:false});
-cvs.addEventListener('touchmove', e => { e.preventDefault(); const t = e.touches[0]; moveDrag(t.clientX, t.clientY); }, {passive:false});
-document.addEventListener('touchend', () => { dragIdx = -1; });
-
-// Tooltip on hover (reveal phase)
-cvs.addEventListener('mousemove', e => {
-  if (phase !== 'reveal' && phase !== 'analyse') { document.getElementById('tooltip').style.display='none'; return; }
-  const mi = nearestMonth(e.clientX);
-  const d = ds();
-  const tt = document.getElementById('tooltip');
-  tt.innerHTML = `<strong>${MONTHS[mi]}</strong><br>
-    <span style="color:#aaa">Your guess:</span> ${Math.round(userPts[mi])} ${d.unit}<br>
-    <span style="color:${COLORS[activeDs]};font-weight:600">Real:</span> ${d.data[mi]} ${d.unit}`;
-  tt.style.display = 'block';
-  tt.style.left = (e.clientX + 14) + 'px';
-  tt.style.top = (e.clientY - 10) + 'px';
-});
-cvs.addEventListener('mouseleave', () => { document.getElementById('tooltip').style.display='none'; });
-
-// Scoring
-function computeScore() {
-  const d = ds();
-  let totalErr = 0;
-  d.data.forEach((v, i) => { totalErr += Math.abs(v - userPts[i]); });
-  const avgErr = totalErr / 12;
-  const range = d.maxHint - d.minHint;
-  const pct = Math.max(0, 100 - (avgErr / range) * 100).toFixed(0);
-  return { avgErr: avgErr.toFixed(1), pct, unit: d.unit };
-}
-
-function showScore() {
-  const sc = computeScore();
-  const d = ds();
-  document.getElementById('scoreCard').style.display = 'block';
-  const grid = document.getElementById('scoreGrid');
-  grid.innerHTML = '';
-
-  const items = [
-    {label: 'Average error', val: sc.avgErr + ' ' + sc.unit, cls: parseFloat(sc.avgErr) < (d.maxHint-d.minHint)*0.1 ? 'good' : 'warn'},
-    {label: 'Accuracy', val: sc.pct + '%', cls: parseInt(sc.pct) > 80 ? 'good' : 'warn'},
-  ];
-  items.forEach(({label, val, cls}) => {
-    const div = document.createElement('div');
-    div.className = 'score-item';
-    div.innerHTML = `<div class="score-label">${label}</div><div class="score-val ${cls}">${val}</div>`;
+function scoreUp(){
+  const d=ds();
+  let tot=0;d.data.forEach((v,i)=>tot+=Math.abs(v-userPts[i]));
+  const avg=tot/12;
+  const range=d.max-d.min;
+  const pct=Math.max(0,100-(avg/range)*100).toFixed(0);
+  document.getElementById('score-section').style.display='block';
+  const grid=document.getElementById('score-grid');grid.innerHTML='';
+  [{l:'Avg error',v:avg.toFixed(1)+' '+d.unit,good:avg<range*0.1},
+   {l:'Accuracy',v:pct+'%',good:+pct>80}].forEach(({l,v,good})=>{
+    const div=document.createElement('div');div.className='sc-card';
+    div.innerHTML=`<div class="sc-lbl">${l}</div><div class="sc-val ${good?'good':'warn'}">${v}</div>`;
     grid.appendChild(div);
   });
-
-  // Per-month worst misses
-  let worst = 0, worstMon = 0;
-  d.data.forEach((v, i) => { const e = Math.abs(v - userPts[i]); if (e > worst) { worst = e; worstMon = i; } });
-  const msg = parseInt(sc.pct) > 85
-    ? `Good prediction! Your biggest miss was ${MONTHS[worstMon]} (off by ${Math.round(worst)} ${d.unit}). Move to the Analyse tab to read the explanation.`
-    : `Your biggest miss was ${MONTHS[worstMon]} — off by ${Math.round(worst)} ${d.unit}. That is normal; these patterns are not obvious without data. Move to Analyse to find out why.`;
-  document.getElementById('scoreMsg').textContent = msg;
+  let worst=0,worstM=0;
+  d.data.forEach((v,i)=>{const e=Math.abs(v-userPts[i]);if(e>worst){worst=e;worstM=i;}});
+  const msg=+pct>85
+    ?`Good prediction! Biggest miss: ${MONTHS[worstM]} (off by ${Math.round(worst)} ${d.unit}).`
+    :`Biggest miss: ${MONTHS[worstM]} — off by ${Math.round(worst)} ${d.unit}. Move to Analyse to find out why.`;
+  document.getElementById('score-msg').textContent=msg;
 }
 
-// Phase transitions
-function setPhase(p) {
-  phase = p;
-  document.querySelectorAll('.phase-btn').forEach((b, i) => {
-    b.classList.toggle('active', ['predict','reveal','analyse'][i] === p);
-  });
-  document.getElementById('predictBanner').style.display = p === 'predict' ? 'block' : 'none';
-  document.getElementById('btnRevealData').style.display = p === 'predict' ? 'inline-block' : 'none';
-  document.getElementById('btnReset').style.display = 'inline-block';
-  document.getElementById('scoreCard').style.display = (p === 'reveal' || p === 'analyse') ? 'block' : 'none';
-  document.getElementById('analyseCard').style.display = p === 'analyse' ? 'block' : 'none';
-  if (p === 'analyse') {
-    document.getElementById('step1').innerHTML = ds().step1;
-    document.getElementById('step2').innerHTML = ds().step2;
+function setPhase(p){
+  phase=p;
+  document.querySelectorAll('.phase-btn').forEach(b=>b.classList.toggle('active',b.dataset.ph===p));
+  document.getElementById('predict-banner').style.display=p==='predict'?'block':'none';
+  document.getElementById('btn-reveal').style.display=p==='predict'?'inline-block':'none';
+  document.getElementById('score-section').style.display=(p==='reveal'||p==='analyse')?'block':'none';
+  document.getElementById('analyse-section').style.display=p==='analyse'?'block':'none';
+  document.getElementById('canvas-hint').textContent=p==='predict'?'drag dots to predict':'hover for values';
+  if(p==='analyse'){
+    document.getElementById('an-step1').textContent=ds().step1;
+    document.getElementById('an-step2').textContent=ds().step2;
   }
-  renderLegend();
-  drawChart();
-  if (p === 'reveal' || p === 'analyse') showScore();
+  if(p==='reveal'||p==='analyse') scoreUp();
+  renderLegend();drawChart();
 }
 
-document.getElementById('phPredict').onclick = () => setPhase('predict');
-document.getElementById('phReveal').onclick = () => { if (revealed) setPhase('reveal'); };
-document.getElementById('phAnalyse').onclick = () => { if (revealed) setPhase('analyse'); };
-document.getElementById('btnRevealData').onclick = () => { revealed = true; setPhase('reveal'); };
-document.getElementById('btnReset').onclick = () => {
-  revealed = false;
-  initUserPts();
-  setPhase('predict');
-};
-
-// Dataset buttons
-function buildDsBtns() {
-  const row = document.getElementById('dsRow');
-  row.innerHTML = '';
-  DATASETS.forEach((d, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'ds-btn' + (i === activeDs ? ' active' : '');
-    if (i === activeDs) btn.style.background = COLORS[i];
-    btn.dataset.idx = i;
-    btn.textContent = d.shortName;
-    btn.onclick = () => {
-      activeDs = i;
-      revealed = false;
-      initUserPts();
-      buildDsBtns();
-      setPhase('predict');
-    };
-    row.appendChild(btn);
-  });
+// Drag
+const cvs=document.getElementById('lgraph');
+function nearM(ex){
+  const r=cvs.getBoundingClientRect();
+  const W=r.width,cW=W-PAD.l-PAD.r;
+  return Math.max(0,Math.min(11,Math.round((ex-r.left-PAD.l)/cW*11)));
 }
+function clampV(ey){
+  const r=cvs.getBoundingClientRect(),d=ds();
+  const H=r.height,cH=H-PAD.t-PAD.b;
+  return Math.max(d.min,Math.min(d.max,d.min+((PAD.t+cH-(ey-r.top))/cH)*(d.max-d.min)));
+}
+function startDrag(ex,ey){if(phase!=='predict')return;dragIdx=nearM(ex);userPts[dragIdx]=clampV(ey);drawChart();}
+function moveDrag(ex,ey){if(phase!=='predict'||dragIdx<0)return;dragIdx=nearM(ex);userPts[dragIdx]=clampV(ey);drawChart();}
 
-function renderLegend() {
-  const leg = document.getElementById('legend');
-  leg.innerHTML = '';
-  const d = ds();
-  if (phase === 'predict') {
-    leg.innerHTML = `<div class="leg-item"><div class="leg-line" style="background:${COLORS[activeDs]}"></div><span>Your prediction for ${d.shortName}</span></div>`;
-  } else {
-    leg.innerHTML = `<div class="leg-item"><div class="leg-line" style="background:rgba(160,160,160,.7);border:1px dashed #aaa"></div><span>Your prediction</span></div>
-      <div class="leg-item"><div class="leg-dot" style="background:${COLORS[activeDs]}"></div><span>Real data — ${d.name}</span></div>`;
+cvs.addEventListener('pointerdown',e=>{e.preventDefault();startDrag(e.clientX,e.clientY);cvs.setPointerCapture(e.pointerId);},{passive:false});
+cvs.addEventListener('pointermove',e=>{moveDrag(e.clientX,e.clientY);
+  if(phase!=='predict'&&dragIdx<0){
+    const mi=nearM(e.clientX);const d=ds();const tt=document.getElementById('lg-tooltip');
+    tt.innerHTML=`<strong>${MONTHS[mi]}</strong><br>Guess: ${Math.round(userPts[mi])} ${d.unit}<br>Real: ${d.data[mi]} ${d.unit}`;
+    tt.style.display='block';tt.style.left=(e.clientX+14)+'px';tt.style.top=(e.clientY-10)+'px';
   }
-}
+});
+cvs.addEventListener('pointerup',()=>{dragIdx=-1;});
+cvs.addEventListener('pointerleave',()=>{document.getElementById('lg-tooltip').style.display='none';});
 
-window.addEventListener('resize', drawChart);
-buildDsBtns();
-initUserPts();
-setPhase('predict');
+document.getElementById('btn-reveal').addEventListener('click',()=>{revealed=true;setPhase('reveal');});
+document.getElementById('btn-reset').addEventListener('click',()=>{revealed=false;initUser();setPhase('predict');});
+document.querySelectorAll('.phase-btn').forEach(b=>b.addEventListener('click',()=>{
+  if(b.dataset.ph!=='predict'&&!revealed)return;setPhase(b.dataset.ph);
+}));
+window.addEventListener('resize',drawChart);
+buildDsBtns();initUser();setPhase('predict');
 </script>
 </body>
 </html>
