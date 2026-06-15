@@ -3,176 +3,212 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Line Graph Explorer — Ch. 12</title>
+<title>Line Graph Explorer — Grade 8</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,800;9..40,900&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f4f2ec;--paper:#fff;--sand:#e8e4db;--ink:#1a1714;--rule:#ccc8be;
-  --blue:#1650a8;--green:#1a6e42;--red:#b83020;--amber:#c47a0a;
-  --display:'Archivo Black',Impact,sans-serif;
-  --mono:'DM Mono',monospace;--body:'DM Sans',sans-serif;
+  --bg1:#fddcb5;--bg2:#dff2e0;
+  --card:#fff;--border:#1a1a2e;
+  --ink:#1a1a2e;--ink2:#4a4a5a;--ink3:#9090a0;
+  --teal:#4ecdc4;--orange:#ff6b35;--yellow:#ffd93d;--red:#e63946;--purple:#a78bfa;--green:#2a9d8f;
+  --sans:'DM Sans',system-ui,sans-serif;--mono:'DM Mono',monospace;
 }
-html{background:var(--bg)}
-body{font-family:var(--body);background:var(--bg);color:var(--ink);min-height:100vh;
-  -webkit-font-smoothing:antialiased;padding:0}
+html{background:linear-gradient(135deg,var(--bg1) 0%,#fef6e8 50%,var(--bg2) 100%);min-height:100vh}
+body{font-family:var(--sans);color:var(--ink);min-height:100vh;padding:32px 24px;display:flex;flex-direction:column;align-items:center}
 
-/* MASTHEAD */
-.masthead{border-bottom:3px solid var(--ink);padding:16px 24px 12px;
-  display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:baseline}
-.m-tag{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.14em;
-  text-transform:uppercase;opacity:.4;white-space:nowrap}
-.m-title{font-family:var(--display);font-size:clamp(22px,5.5vw,48px);line-height:.92;
-  text-align:center;letter-spacing:.02em}
-.m-right{font-family:var(--mono);font-size:10px;opacity:.4;text-align:right;white-space:nowrap}
-@media(max-width:480px){.masthead{grid-template-columns:1fr}.m-tag,.m-right{display:none}}
+/* PAGE CARD */
+.page-card{background:var(--card);border:2px solid var(--border);border-radius:24px;width:100%;max-width:960px;overflow:hidden}
 
-/* PHASE TABS */
-.phase-bar{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;
-  border-bottom:2px solid var(--ink);scrollbar-width:none;background:var(--paper)}
-.phase-bar::-webkit-scrollbar{display:none}
-.phase-btn{padding:12px 20px;border:none;border-bottom:3px solid transparent;
-  background:transparent;font-family:var(--display);font-size:16px;letter-spacing:.04em;
-  color:var(--ink);opacity:.35;cursor:pointer;white-space:nowrap;flex-shrink:0;
-  margin-bottom:-2px;transition:all .15s;-webkit-tap-highlight-color:transparent}
-.phase-btn.active{opacity:1;border-bottom-color:var(--ink)}
+/* HEADER */
+.card-header{padding:28px 36px 22px}
+.activity-pill{display:inline-flex;align-items:center;gap:6px;background:var(--yellow);border:2px solid var(--border);border-radius:30px;padding:4px 14px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px}
+.activity-pill::before{content:'★';font-size:10px}
+.page-title{font-size:clamp(24px,4vw,40px);font-weight:900;line-height:1.05;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.t-pill{color:#fff;border:2px solid var(--border);border-radius:12px;padding:3px 16px;font-style:italic;font-size:inherit;display:inline-block}
+.page-desc{font-size:15px;color:var(--ink2);line-height:1.6;max-width:600px}
+.page-desc em{color:var(--red);font-style:italic;font-weight:700}
 
-/* DATASET BAR */
-.ds-bar{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;
-  border-bottom:1px solid var(--rule);scrollbar-width:none;background:var(--sand);
-  padding:10px 24px;gap:6px}
-.ds-bar::-webkit-scrollbar{display:none}
-.ds-lbl{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--ink);opacity:.4;align-self:center;flex-shrink:0;margin-right:4px}
-.ds-btn{padding:6px 14px;border:1.5px solid var(--rule);background:var(--paper);
-  font-family:var(--mono);font-size:11px;font-weight:600;color:var(--ink);opacity:.6;
-  cursor:pointer;flex-shrink:0;transition:all .12s;-webkit-tap-highlight-color:transparent}
-.ds-btn:hover{opacity:1;border-color:var(--ink)}
-.ds-btn.active{color:#fff;border-color:transparent;opacity:1}
+/* BODY LAYOUTS */
+.two-col{display:grid;grid-template-columns:1fr 280px;border-top:1px dashed #d0d0d8}
+.two-col-wide{display:grid;grid-template-columns:1fr 320px;border-top:1px dashed #d0d0d8}
+.one-col{border-top:1px dashed #d0d0d8}
+.left-col{padding:24px 28px;border-right:1px dashed #d0d0d8;display:flex;flex-direction:column;gap:20px}
+.right-col{padding:20px 18px;display:flex;flex-direction:column;gap:14px}
+.full-col{padding:24px 28px;display:flex;flex-direction:column;gap:20px}
 
-/* PREDICT BANNER */
-.predict-banner{padding:14px 24px;background:var(--blue);border-bottom:1px solid var(--rule)}
-.pb-text{font-family:var(--mono);font-size:12px;color:#fff;line-height:1.7}
-.pb-text strong{font-weight:700}
+/* SECTION LABELS */
+.sec{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.sec-dot{width:13px;height:13px;border-radius:50%;flex-shrink:0}
+.sec-title{font-size:14px;font-weight:800;color:var(--ink)}
+.sec-rule{flex:1;border:none;border-top:1px dashed #d8d8e0}
 
-/* CANVAS */
-.canvas-section{background:var(--sand);border-bottom:1px solid var(--rule);padding:16px 24px}
-canvas#lgraph{display:block;width:100%;touch-action:none}
-.canvas-hint{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.08em;
-  text-transform:uppercase;color:var(--ink);opacity:.3;text-align:center;margin-top:6px}
+/* INFO CARDS (right col) */
+.info-card{background:#fff;border:2px solid var(--border);border-radius:18px;padding:14px 16px}
+.info-card + .info-card{margin-top:0}
 
-/* LEGEND */
-.legend-row{padding:10px 24px;border-bottom:1px solid var(--rule);
-  display:flex;gap:16px;flex-wrap:wrap;align-items:center}
-.leg-item{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink);opacity:.65}
-.leg-line{width:24px;height:3px;border-radius:2px}
-.leg-dot{width:10px;height:10px;border-radius:50%}
+/* CONTROLS — sliders */
+.ctrl-block{display:flex;flex-direction:column;gap:5px}
+.ctrl-head{display:flex;justify-content:space-between;align-items:baseline}
+.ctrl-lbl{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3)}
+.ctrl-val{font-family:var(--mono);font-size:24px;font-weight:700}
+input[type=range]{-webkit-appearance:none;width:100%;height:5px;border-radius:3px;background:#e8e8e8;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid var(--border)}
 
-/* CONTROLS */
-.ctrl-bar{padding:12px 24px;border-bottom:1px solid var(--rule);background:var(--paper);
-  display:flex;gap:8px;flex-wrap:wrap}
-.c-btn{padding:8px 16px;border:1.5px solid var(--rule);background:transparent;
-  font-family:var(--mono);font-size:11px;font-weight:600;text-transform:uppercase;
-  letter-spacing:.05em;color:var(--ink);opacity:.6;cursor:pointer;transition:all .12s}
-.c-btn:hover{opacity:1;border-color:var(--ink)}
-.c-btn.primary{background:var(--ink);color:#f4f2ec;border-color:var(--ink);opacity:1}
-.c-btn.danger{color:var(--red);border-color:#e0b0a8}
+/* TABS / SCENARIO BUTTONS */
+.tab-row{display:flex;gap:8px;flex-wrap:wrap;padding:16px 28px;border-bottom:1px dashed #d0d0d8;background:#fafafa}
+.tab-btn{padding:8px 18px;border:2px solid #d0d0d8;border-radius:30px;background:#fff;font-family:var(--sans);font-size:13px;font-weight:700;color:var(--ink2);cursor:pointer;transition:all .14s}
+.tab-btn:hover{border-color:var(--teal);color:var(--teal)}
+.tab-btn.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+.tab-btn.active-orange{background:var(--orange);color:#fff;border-color:var(--orange)}
 
-/* SCORE */
-.score-section{padding:18px 24px;background:var(--paper);border-bottom:1px solid var(--rule)}
-.score-head{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--ink);opacity:.4;margin-bottom:12px}
-.score-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:12px}
-.sc-card{padding:12px 14px;border:1.5px solid var(--rule);background:var(--sand)}
-.sc-lbl{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--ink);opacity:.4;margin-bottom:4px}
-.sc-val{font-family:'Archivo Black',Impact,sans-serif;font-size:clamp(20px,3vw,28px);
-  letter-spacing:.02em;line-height:1}
-.sc-val.good{color:var(--green)}
-.sc-val.warn{color:var(--amber)}
-.score-msg{font-size:13px;line-height:1.65;color:var(--ink);opacity:.65}
+/* STEP NAV */
+.step-nav{display:flex;align-items:center;gap:12px;padding:14px 28px;border-bottom:1px dashed #d0d0d8;background:#fafafa}
+.step-btn{padding:8px 20px;border:2px solid var(--border);border-radius:30px;font-family:var(--sans);font-size:13px;font-weight:800;cursor:pointer;background:#fff;color:var(--ink2);transition:all .14s}
+.step-btn:hover:not(:disabled){background:#f5f5f5}
+.step-btn:disabled{opacity:.35;cursor:default}
+.step-btn.primary{background:var(--teal);color:#fff;border-color:var(--teal)}
+.step-btn.primary:hover{background:#3ab5ac}
+.step-dots{display:flex;gap:6px}
+.sdot{width:9px;height:9px;border-radius:50%;background:#d8d8e0;transition:all .15s}
+.sdot.done{background:var(--teal)}
+.sdot.cur{background:var(--teal);transform:scale(1.3)}
+.step-lbl{flex:1;font-size:14px;font-weight:700;color:var(--ink)}
 
-/* ANALYSE */
-.analyse-section{padding:18px 24px;border-bottom:1px solid var(--rule)}
-.an-head{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--ink);opacity:.4;margin-bottom:12px}
-.an-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:500px){.an-grid{grid-template-columns:1fr}}
-.an-card{padding:14px 16px;border:1.5px solid var(--rule);background:var(--sand)}
-.an-num{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;
-  text-transform:uppercase;color:var(--ink);opacity:.35;margin-bottom:4px}
-.an-title{font-family:var(--display);font-size:16px;letter-spacing:.04em;margin-bottom:6px}
-.an-body{font-size:13px;line-height:1.65;color:var(--ink);opacity:.65}
+/* STEP BANNER */
+.step-banner{padding:14px 28px;background:#fffbe6;border-bottom:1px dashed #d0d0d8;display:flex;align-items:baseline;gap:10px}
+.step-num{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--orange);flex-shrink:0}
+.step-text{font-size:15px;font-weight:700;color:var(--ink);line-height:1.4}
 
-/* INSIGHT */
-.insight-row{padding:16px 24px;display:grid;grid-template-columns:3px 1fr;gap:14px}
-.ins-bar{background:var(--amber)}
-.ins-text{font-size:13.5px;line-height:1.75;color:var(--ink);opacity:.7}
-.ins-text strong{opacity:1}
+/* CANVAS AREA */
+.canvas-wrap{background:#f4f8ff;border-radius:0;overflow:hidden;position:relative}
+canvas{display:block;width:100%;height:auto}
 
-#lg-tooltip{position:fixed;background:var(--ink);color:#f0ece3;padding:8px 12px;
-  font-family:var(--mono);font-size:11px;line-height:1.6;pointer-events:none;
-  display:none;z-index:100}
+/* FACT / STATS ROWS */
+.fact-row{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px dashed #e8e8e8}
+.fact-row:last-child{border-bottom:none}
+.fact-lbl{font-size:13px;color:var(--ink2)}
+.fact-val{font-family:var(--mono);font-size:16px;font-weight:700}
+
+/* TALLY BUTTONS */
+.tally{display:flex;align-items:center;gap:8px}
+.tally-btn{width:36px;height:36px;border:2px solid var(--border);border-radius:10px;background:#fff;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;color:var(--ink2)}
+.tally-btn:hover{background:var(--teal);color:#fff;border-color:var(--teal)}
+.tally-num{font-family:var(--mono);font-size:28px;font-weight:700;min-width:40px;text-align:center}
+
+/* VERDICT STRIP */
+.verdict-strip{padding:14px 28px;font-size:15px;font-weight:700;border-top:1px dashed #d0d0d8}
+.verdict-ok{background:#e8faf9;color:var(--green)}
+.verdict-fail{background:#fef0ee;color:#c0441e}
+
+/* INSIGHT STRIP */
+.insight-strip{padding:16px 28px;font-size:14px;color:var(--ink2);line-height:1.7;background:#fffbe6;border-top:1px dashed #d0d0d8}
+.insight-strip strong{color:var(--ink);font-weight:700}
+
+/* NUMBER CIRCLES */
+.num-circle{width:26px;height:26px;border-radius:50%;background:var(--yellow);border:2px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+
+/* FLOATING SHAPES */
+.shape{position:fixed;pointer-events:none;z-index:-1}
+.sh-circle{width:56px;height:56px;border-radius:50%;background:#ff6b6b;opacity:.65;top:80px;left:calc(50% - 530px)}
+.sh-tri{width:0;height:0;border-left:22px solid transparent;border-right:22px solid transparent;border-bottom:38px solid #4ecdc4;opacity:.65;bottom:180px;right:calc(50% - 530px)}
+.sh-star{font-size:34px;line-height:1;opacity:.55;top:200px;right:calc(50% - 510px)}
+.sh-sq{width:36px;height:36px;border-radius:8px;background:#a78bfa;opacity:.55;bottom:90px;left:calc(50% - 510px);transform:rotate(15deg)}
+
+@media(max-width:740px){
+  body{padding:12px}
+  .two-col,.two-col-wide{grid-template-columns:1fr}
+  .left-col{border-right:none;border-bottom:1px dashed #d0d0d8}
+  .card-header,.full-col,.left-col,.right-col{padding-left:18px;padding-right:18px}
+  .tab-row,.step-nav,.step-banner,.verdict-strip,.insight-strip{padding-left:18px;padding-right:18px}
+}
+.page-card{max-width:960px}
+
+/* DATASET + SCORE BUTTONS */
+.ds-btn{padding:7px 16px;border:2px solid #d0d0d8;border-radius:20px;background:#fff;font-family:'DM Sans',system-ui,sans-serif;font-size:13px;font-weight:700;color:var(--ink2);cursor:pointer;transition:all .12s}
+.ds-btn.active{color:#fff;border-color:transparent}
+.ds-btn:hover{border-color:var(--teal)}
+.score-row{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-radius:8px;background:#f8f8f8;font-size:13px;color:var(--ink2)}
+.score-row .sr-val{font-family:'DM Mono',monospace;font-weight:700}
+.hi{color:var(--teal);font-weight:700}
+.hi-bad{color:var(--red);font-weight:700}
+
 </style>
 </head>
 <body>
-
-<div id="lg-tooltip"></div>
-
-<div class="masthead">
-  <div class="m-tag">Ch. 12 · Data Handling</div>
-  <div class="m-title">Line Graph Explorer</div>
-  <div class="m-right">Grade 8 · Oxford / Bhanzu</div>
-</div>
-
-<div class="phase-bar">
-  <button class="phase-btn active" data-ph="predict">1 · Predict</button>
-  <button class="phase-btn" data-ph="reveal">2 · Reveal</button>
-  <button class="phase-btn" data-ph="analyse">3 · Analyse</button>
-</div>
-
-<div class="ds-bar" id="ds-bar">
-  <span class="ds-lbl">Dataset</span>
-</div>
-
-<div class="predict-banner" id="predict-banner">
-  <div class="pb-text"><strong>Your turn:</strong> Drag any dot up or down to set your prediction. When done, click <strong>Reveal real data</strong> to see how close you were.</div>
-</div>
-
-<div class="canvas-section">
-  <canvas id="lgraph" height="300"></canvas>
-  <div class="canvas-hint" id="canvas-hint">drag dots to predict</div>
-</div>
-
-<div class="legend-row" id="legend-row"></div>
-
-<div class="ctrl-bar">
-  <button class="c-btn primary" id="btn-reveal">Reveal real data</button>
-  <button class="c-btn danger" id="btn-reset">Start over</button>
-</div>
-
-<div class="score-section" id="score-section" style="display:none">
-  <div class="score-head">How close was your prediction?</div>
-  <div class="score-grid" id="score-grid"></div>
-  <div class="score-msg" id="score-msg"></div>
-</div>
-
-<div class="analyse-section" id="analyse-section" style="display:none">
-  <div class="an-head">Two-step analysis</div>
-  <div class="an-grid">
-    <div class="an-card"><div class="an-num">Step 1</div><div class="an-title">What is given</div><div class="an-body" id="an-step1">Select a dataset.</div></div>
-    <div class="an-card"><div class="an-num">Step 2</div><div class="an-title">Infer & interpret</div><div class="an-body" id="an-step2">Observations appear here.</div></div>
+<div class="shape sh-circle"></div>
+<div class="shape sh-tri"></div>
+<div class="shape sh-star">★</div>
+<div class="shape sh-sq"></div>
+<div class="page-card">
+  <div class="card-header">
+    <div class="activity-pill">Ch 12 · Data Handling</div>
+    <div class="page-title">Line Graph <span class="t-pill" style="background:var(--orange)">Explorer</span></div>
+    <p class="page-desc">Predict where hidden data points sit, then reveal the real graph. Study the trends and <em>rate of change</em> between points.</p>
   </div>
-</div>
 
-<div class="insight-row">
-  <div class="ins-bar"></div>
-  <p class="ins-text">A line graph shows <strong>change over time</strong>. The slope of each segment tells you the rate of change — steep = rapid change, flat = little change. Comparing two datasets on the same graph reveals which changes together.</p>
-</div>
+  <!-- TOOLTIP (positioned by JS) -->
+  <div id="lg-tooltip" style="position:fixed;pointer-events:none;background:var(--ink);color:#fff;font-family:var(--mono);font-size:12px;font-weight:700;padding:5px 10px;border-radius:8px;display:none;z-index:100"></div>
 
+  <!-- PHASE TABS -->
+  <div class="tab-row">
+    <button class="phase-btn tab-btn active" data-ph="predict">1 · Predict</button>
+    <button class="phase-btn tab-btn" data-ph="reveal">2 · Reveal</button>
+    <button class="phase-btn tab-btn" data-ph="analyse">3 · Analyse</button>
+  </div>
+
+  <!-- DATASET BAR (populated by JS) -->
+  <div id="ds-bar" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 28px;border-bottom:1px dashed #d0d0d8;background:#fafafa">
+    <span style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3)">Dataset:</span>
+  </div>
+
+  <div class="two-col-wide">
+    <div class="left-col" style="padding:0">
+      <!-- PREDICT BANNER -->
+      <div id="predict-banner" style="padding:14px 20px;background:#fffbe6;border-bottom:1px dashed #d0d0d8">
+        <div style="font-size:14px;font-weight:800;color:var(--orange);margin-bottom:4px">Your task: predict the missing points</div>
+        <div style="font-size:13px;color:var(--ink2)">Click on the graph where you think the hidden data points should be. Then reveal the real data.</div>
+      </div>
+      <!-- CANVAS -->
+      <canvas id="lgraph" style="display:block;width:100%;background:#f8f8f8;cursor:crosshair"></canvas>
+      <div id="canvas-hint" style="text-align:center;padding:6px;font-size:12px;color:var(--ink3)"></div>
+      <div style="padding:10px 16px;border-top:1px dashed #d0d0d8;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="step-btn primary" id="btn-reveal">Reveal real data</button>
+        <button class="step-btn" id="btn-reset">Reset</button>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <!-- LEGEND -->
+      <div class="sec"><div class="sec-dot" style="background:var(--teal)"></div><span class="sec-title">Legend</span><hr class="sec-rule"></div>
+      <div id="legend-row" style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink2)"></div>
+
+      <!-- SCORE (after reveal) -->
+      <div id="score-section" style="display:none;margin-top:8px">
+        <div class="sec" style="margin-top:8px"><div class="sec-dot" style="background:var(--yellow)"></div><span class="sec-title">How close were you?</span><hr class="sec-rule"></div>
+        <div id="score-msg" style="font-size:14px;color:var(--ink2);line-height:1.6;margin-bottom:8px"></div>
+        <div id="score-grid" style="display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+
+      <!-- ANALYSE SECTION (phase 3) -->
+      <div id="analyse-section" style="display:none;margin-top:8px">
+        <div class="sec" style="margin-top:8px"><div class="sec-dot" style="background:var(--purple)"></div><span class="sec-title">Analyse</span><hr class="sec-rule"></div>
+        <div id="an-step1" style="font-size:13px;color:var(--ink2);line-height:1.7;padding:10px 12px;background:#e8faf9;border-radius:10px;border:1.5px solid var(--teal);margin-bottom:8px"></div>
+        <div id="an-step2" style="font-size:13px;color:var(--ink2);line-height:1.7;padding:10px 12px;background:#fef0ee;border-radius:10px;border:1.5px solid var(--orange)"></div>
+      </div>
+
+      <div class="info-card" style="margin-top:12px;padding:12px 14px">
+        <p style="font-size:13px;color:var(--ink2);line-height:1.6">
+          <strong>Line graphs</strong> show how a value changes over time. The slope between points tells you the <em>rate of change</em>. A steeper line = faster change.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>
 <script>
+
 const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const COLORS=['#b83020','#1650a8','#1a6e42','#c47a0a','#7a4ab0','#0e7490'];
 
@@ -385,6 +421,7 @@ document.querySelectorAll('.phase-btn').forEach(b=>b.addEventListener('click',()
 }));
 window.addEventListener('resize',drawChart);
 buildDsBtns();initUser();setPhase('predict');
+
 </script>
 </body>
 </html>
